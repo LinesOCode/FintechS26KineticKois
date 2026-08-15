@@ -1,342 +1,500 @@
-"""
-Streamlit Investing Simulation (beginner-friendly)
-
-Saves: app.py
-
-Install dependencies:
-  pip install -r requirements.txt
-
-Run:
-  streamlit run app.py
-
-This app:
- - Lets user choose a starting amount (15k/10k/5k)
- - Fetches data via yfinance (Yahoo Finance)
- - Scores stocks using simple metrics (momentum, volatility, valuation, dividend yield)
- - Picks top stocks and simulates equal-weight buy-and-hold portfolio
- - Shows interactive Plotly charts and step-by-step explanations
-"""
-
-import streamlit as st
-import yfinance as yf
-import pandas as pd
-import numpy as np
-import plotly.express as px
-import plotly.graph_objects as go
-from datetime import datetime, timedelta
-
-st.set_page_config(page_title="Beginner Investing Simulator", layout="wide")
-
-# --- Sidebar: user choices ---
-st.sidebar.title("Investing Simulator · Settings")
-
-starting_amount = st.sidebar.radio(
-    "Choose starting amount",
-    options=[15000, 10000, 5000],
-    format_func=lambda x: f"${x:,}"
-)
-
-risk_profile = st.sidebar.selectbox(
-    "Risk profile",
-    options=["Conservative", "Moderate", "Aggressive"]
-)
-
-num_picks = st.sidebar.slider("Number of stocks to pick for portfolio", 3, 10, 5)
-lookback_months = st.sidebar.selectbox("Lookback period to evaluate momentum", [6, 12], index=0)
-start_backtest = st.sidebar.date_input(
-    "Backtest start date",
-    value=datetime.today() - timedelta(days=365),
-    max_value=datetime.today() - timedelta(days=30)
-)
-
-st.sidebar.markdown("---")
-st.sidebar.write("This simulation uses Yahoo Finance (via yfinance) to fetch data. Data is for educational purposes only — not financial advice.")
-
-# --- Explanation & beginner-friendly steps ---
-st.title("Beginner-Friendly Investing Simulator")
-st.markdown(
-    """
-This app walks you through a simple, explainable approach to pick stocks and simulate investing:
-1. We fetch recent price and fundamental data from Yahoo Finance.
-2. We compute easy-to-understand metrics:
-   - Momentum: recent returns (stocks with positive momentum often continue).
-   - Volatility: how much price swings (lower for conservative profiles).
-   - Valuation (P/E): lower can signal cheaper relative price (but context matters).
-   - Dividend yield: income for conservative investors.
-3. We score stocks using a weighted combination of these metrics (weights change by risk profile).
-4. The top-scoring stocks are chosen for an equal-weight portfolio. We'll simulate buy-and-hold from your chosen start date and compare to the market ETF (SPY).
-5. Interactive charts let you explore results and learn how choices affect outcomes.
-"""
-)
-
-# --- Ticker set (curated, cross-sector) ---
-DEFAULT_TICKERS = [
-    "AAPL","MSFT","AMZN","GOOGL","META","NVDA","TSLA","BRK-B","JNJ","V",
-    "JPM","PG","MA","UNH","HD","BAC","XOM","CVX","KO","PFE",
-    "DIS","NKE","MCD","SBUX","T","VZ","IBM","ORCL","AMD","INTC"
-]
-
-st.markdown("### 1) Which stocks we're evaluating")
-st.write("We're evaluating a curated list of common, widely-known stocks across sectors. You can edit the list below.")
-
-tickers_input = st.text_area("Tickers (comma-separated)", value=",".join(DEFAULT_TICKERS), height=80)
-tickers = [t.strip().upper() for t in tickers_input.split(",") if t.strip()]
-
-# --- Fetch data from yfinance ---
-@st.cache_data(ttl=3600)
-def fetch_data(tickers, start_date, end_date):
-    # Download daily adjusted close
-    data = yf.download(tickers, start=start_date, end=end_date, progress=False, group_by='ticker', threads=True)
-    # For fundamentals (info), query per ticker (yfinance only gives limited info via bulk)
-    infos = {}
-    for t in tickers:
-        try:
-            tick = yf.Ticker(t)
-            infos[t] = tick.info
-        except Exception:
-            infos[t] = {}
-    return data, infos
-
-end_date = datetime.today().date()
-start_date = start_backtest
-data_load_state = st.info("Fetching data from Yahoo Finance...")
-price_data, infos = fetch_data(tickers, start_date - timedelta(days=30), end_date + timedelta(days=1))
-data_load_state.empty()
-
-# --- Compute metrics ---
-st.markdown("### 2) Compute simple metrics (easy to understand)")
-# We will compute:
-# - 6-month or 12-month return (depending on lookback)
-# - annualized volatility
-# - trailing P/E
-# - dividend yield
-metrics = []
-for t in tickers:
-    try:
-        if t in price_data.columns.levels[0]:
-            adj_close = price_data[t]['Adj Close'].dropna()
-        else:
-            # when only single ticker, yfinance returns series
-            adj_close = price_data['Adj Close'].dropna() if 'Adj Close' in price_data else pd.Series()
-        if adj_close.empty:
-            continue
-        # select lookback window
-        lookback_days = int(lookback_months * 30)
-        recent = adj_close.tail(lookback_days)
-        # if not enough data, extend to available
-        if recent.empty:
-            continue
-        ret = (recent.iloc[-1] / recent.iloc[0]) - 1
-        daily_returns = adj_close.pct_change().dropna()
-        vol = daily_returns.std() * np.sqrt(252)  # annualized volatility
-        info = infos.get(t, {})
-        pe = info.get('trailingPE', np.nan)
-        div_yield = info.get('dividendYield', 0.0)  # already in decimal form sometimes
-        # Normalize dividendYield (some tickers may have None)
-        if div_yield is None:
-            div_yield = 0.0
-        metrics.append({
-            "ticker": t,
-            "momentum": ret,
-            "volatility": vol,
-            "pe": pe,
-            "dividend_yield": div_yield
-        })
-    except Exception as e:
-        # skip ticker if any error
-        print(f"Error processing {t}: {e}")
-metrics_df = pd.DataFrame(metrics).set_index('ticker')
-st.dataframe(metrics_df.style.format({
-    'momentum': '{:.2%}',
-    'volatility': '{:.2%}',
-    'pe': '{:.1f}',
-    'dividend_yield': '{:.2%}'
-}))
-
-st.markdown("Why these metrics? Momentum helps find recent winners; volatility measures risk; P/E is a simple valuation proxy; dividend yield provides income for conservative portfolios.")
-
-# --- Scoring function ---
-def score_stocks(df, profile):
-    # We'll transform metrics to scores 0-1 (higher better)
-    # For momentum: higher is better
-    # For volatility: lower is better
-    # For pe: lower is better (but NaNs will be set to median)
-    # For dividend: higher is better
-    sc = pd.DataFrame(index=df.index)
-    # Handle missing PE
-    pe = df['pe'].replace({0: np.nan})
-    pe_filled = pe.fillna(pe.median())
-    # Min-max normalization helper
-    def minmax(s, invert=False):
-        if s.max() - s.min() == 0:
-            return pd.Series(0.5, index=s.index)
-        r = (s - s.min()) / (s.max() - s.min())
-        return 1 - r if invert else r
-    sc['momentum_s'] = minmax(df['momentum'], invert=False)
-    sc['vol_s'] = minmax(df['volatility'], invert=True)  # lower vol -> higher score
-    sc['pe_s'] = minmax(pe_filled, invert=True)  # lower PE -> higher
-    sc['div_s'] = minmax(df['dividend_yield'], invert=False)
-    # weights by profile
-    if profile == "Conservative":
-        weights = {'momentum_s': 0.2, 'vol_s': 0.4, 'pe_s': 0.2, 'div_s': 0.2}
-    elif profile == "Aggressive":
-        weights = {'momentum_s': 0.5, 'vol_s': 0.1, 'pe_s': 0.2, 'div_s': 0.2}
-    else:  # Moderate
-        weights = {'momentum_s': 0.4, 'vol_s': 0.25, 'pe_s': 0.2, 'div_s': 0.15}
-    sc['score'] = sum(sc[c] * w for c, w in weights.items())
-    return sc
-
-scores = score_stocks(metrics_df, risk_profile)
-ranked = scores.sort_values('score', ascending=False)
-st.markdown("### 3) Scores and rankings")
-st.write("Stocks are scored 0-1 (higher is better). The scoring is transparent — you can see how momentum, volatility, valuation, and dividends contribute.")
-st.dataframe(ranked.style.format({'score': '{:.3f}'}))
-
-# --- Pick top and bottom (good vs bad) ---
-top = ranked.head(num_picks)
-bottom = ranked.tail(num_picks)
-st.markdown("#### Top picks (interpreted by simple scoring)")
-st.table(top[['score']])
-st.markdown("#### Bottom picks (lower-scoring by same rules — candidates to avoid for this strategy)")
-st.table(bottom[['score']])
-
-# --- Build portfolio: equal-weight top picks, buy-and-hold ---
-st.markdown("### 4) Build portfolio and simulate")
-selected = list(top.index)
-st.write(f"Selected stocks for portfolio (equal-weight): {', '.join(selected)}")
-
-# Fetch adjusted close for selected and SPY for benchmark
-@st.cache_data(ttl=3600)
-def get_price_series(tickers, start_date, end_date):
-    df = yf.download(tickers, start=start_date, end=end_date, progress=False)['Adj Close']
-    return df
-
-price_df = get_price_series(selected + ["SPY"], start_backtest, end_date)
-# If only one stock selected, ensure DataFrame shape
-if isinstance(price_df, pd.Series):
-    price_df = price_df.to_frame()
-
-price_df = price_df.dropna(how='all')  # drop days with no data
-price_df = price_df.ffill().dropna(how='all')  # forward fill
-
-# Align index
-price_df = price_df.loc[price_df.index >= pd.Timestamp(start_backtest)]
-
-# Compute equal-weight portfolio time series (buy-and-hold)
-alloc = {t: 1/len(selected) for t in selected}
-alloc_df = price_df[selected].pct_change().fillna(0)
-# compute normalized prices (start at 1)
-norm = price_df[selected] / price_df[selected].iloc[0]
-# portfolio value series (starting_amount)
-weights = np.array([alloc[t] for t in selected])
-portfolio_norm = (norm * weights).sum(axis=1)
-portfolio_values = portfolio_norm * starting_amount
-
-# Benchmark normalised
-spy_norm = price_df['SPY'] / price_df['SPY'].iloc[0]
-spy_values = spy_norm * starting_amount
-
-# Show charts
-st.markdown("#### Portfolio vs SPY (benchmark)")
-fig = go.Figure()
-fig.add_trace(go.Scatter(x=portfolio_values.index, y=portfolio_values.values, name="Portfolio", mode='lines'))
-fig.add_trace(go.Scatter(x=spy_values.index, y=spy_values.values, name="SPY (market)", mode='lines'))
-fig.update_layout(yaxis_title="Portfolio value (USD)", xaxis_title="Date", hovermode="x unified")
-st.plotly_chart(fig, use_container_width=True)
-
-# Allocation pie chart
-st.markdown("#### Allocation")
-alloc_vals = [starting_amount * alloc[t] for t in selected]
-pie = px.pie(names=selected, values=alloc_vals, title="Initial allocation (equal-weight)")
-st.plotly_chart(pie, use_container_width=True)
-
-# Individual returns table
-st.markdown("#### Individual stock returns since start")
-ind_returns = (price_df[selected].iloc[-1] / price_df[selected].iloc[0]) - 1
-ind_perf = pd.DataFrame({
-    'start_price': price_df[selected].iloc[0],
-    'end_price': price_df[selected].iloc[-1],
-    'return': ind_returns
-}).T if False else pd.DataFrame({
-    'start_price': price_df[selected].iloc[0],
-    'end_price': price_df[selected].iloc[-1],
-    'return': ind_returns
-}).T  # ensure DataFrame shape
-ind_table = pd.DataFrame({
-    'start_price': price_df[selected].iloc[0],
-    'end_price': price_df[selected].iloc[-1],
-    'return_pct': ind_returns
-}).T  # hack to show
-# Simpler presentable table:
-ind_df_show = pd.DataFrame({
-    'start_price': price_df[selected].iloc[0],
-    'end_price': price_df[selected].iloc[-1],
-    'return': ind_returns
-}).T if False else pd.DataFrame({
-    'start_price': price_df[selected].iloc[0],
-    'end_price': price_df[selected].iloc[-1],
-    'return': ind_returns
-}).T
-# Create readable table:
-readable = pd.DataFrame({
-    'start_price': price_df[selected].iloc[0],
-    'end_price': price_df[selected].iloc[-1],
-    'return_pct': ind_returns
-}).T  # keep shape consistent for display
-# Instead, convert to tidy:
-ind_tidy = pd.DataFrame({
-    'start_price': price_df[selected].iloc[0],
-    'end_price': price_df[selected].iloc[-1],
-    'return_pct': ind_returns
-}).T  # not ideal; simpler approach:
-ind_tidy = pd.DataFrame({
-    'start_price': price_df[selected].iloc[0].round(2),
-    'end_price': price_df[selected].iloc[-1].round(2),
-    'return_pct': ind_returns.round(4)
-}).T
-# The better display:
-ind_display = pd.DataFrame({
-    'start_price': price_df[selected].iloc[0].round(2),
-    'end_price': price_df[selected].iloc[-1].round(2),
-    'return_%': (ind_returns*100).round(2)
-}).T  # awkward, swap orientation:
-ind_display = pd.DataFrame({
-    'start_price': price_df[selected].iloc[0].round(2),
-    'end_price': price_df[selected].iloc[-1].round(2),
-    'return_%': (ind_returns*100).round(2)
-}).T
-# Build final nicer table:
-ind_final = pd.DataFrame({
-    'start_price': price_df[selected].iloc[0].round(2),
-    'end_price': price_df[selected].iloc[-1].round(2),
-    'return_%': (ind_returns*100).round(2)
-})
-ind_final = ind_final[['start_price','end_price','return_%']]
-st.dataframe(ind_final.style.format({'start_price': '${:,.2f}', 'end_price': '${:,.2f}', 'return_%': '{:.2f}%'}))
-
-# Show time series per stock when clicking/toggling
-st.markdown("#### Explore individual stock charts")
-chosen_stock = st.selectbox("Show chart for stock:", options=selected)
-if chosen_stock:
-    fig2 = px.line(price_df[chosen_stock], title=f"{chosen_stock} Adjusted Close")
-    fig2.update_layout(yaxis_title="Adj Close (USD)")
-    st.plotly_chart(fig2, use_container_width=True)
-
-# --- Step-by-step rationale and tips ---
-st.markdown("### 5) Step-by-step explanation (why we did each step)")
-st.write("""
-- We pick a curated universe to keep the example manageable. In real life you'd start with an index or watchlist.
-- Momentum (recent returns) often identifies trending stocks, but momentum can reverse — so diversify.
-- Volatility is a measure of risk; conservative investors prefer low volatility.
-- P/E is a simple valuation metric — low can be good but may indicate troubles; don't rely on one metric alone.
-- Dividend yield provides income and stability for conservative strategies.
-- We use equal-weighting to keep allocation simple and avoid over-concentration.
-- Backtest here is simple buy-and-hold from the chosen start date. Real investing would consider rebalancing, transaction costs, taxes, and position sizing rules.
-""")
-
-st.markdown("### Notes & Next steps")
-st.write("""
-- This is an educational simulator, not investment advice.
-- Data comes from Yahoo Finance via yfinance and can have gaps or delays.
-- To improve: expand the universe (e.g., S&P 500), add rebalancing logic, include transaction costs, or use more advanced signals (earnings revisions, fundamentals trends).
-""")
+ /*
+  InvestingSimulator.java
+  Beginner-friendly investing simulator with live Yahoo Finance lookups and simple visuals.
+ 
+  Requirements:
+   - Java 11 or newer
+   - No external libraries required
+ 
+  How to compile and run:
+   javac InvestingSimulator.java
+   java InvestingSimulator
+ 
+  The program opens a window. Choose a starting amount, click "Fetch recommendations",
+  review the step-by-step explanation, then "Buy recommended" and "Run simulation".
+ */
+ 
+ import javax.swing.*;
+ import java.awt.*;
+ import java.awt.event.*;
+ import java.net.*;
+ import java.net.http.*;
+ import java.time.*;
+ import java.util.*;
+ import java.util.List;
+ import java.util.regex.*;
+ import java.io.*;
+ import java.util.concurrent.*;
+ 
+ // Single-file Swing application
+ public class InvestingSimulator {
+     private static final String[] WATCHLIST = {
+         "AAPL","MSFT","AMZN","GOOGL","NVDA","TSLA","META","JNJ","JPM","V"
+     };
+ 
+     private JFrame frame;
+     private JTextArea log;
+     private ChartPanel chartPanel;
+     private JComboBox<String> amountBox;
+     private JButton fetchBtn, buyBtn, simulateBtn, stepBtn, animateBtn;
+     private JTable table;
+     private Portfolio portfolio;
+     private List<StockInfo> recommendedGood = new ArrayList<>();
+     private List<StockInfo> recommendedBad = new ArrayList<>();
+     private Map<String, Double[]> simulatedPaths = new HashMap<>();
+     private volatile boolean animating = false;
+ 
+     public static void main(String[] args) {
+         SwingUtilities.invokeLater(() -> new InvestingSimulator().createAndShowGUI());
+     }
+ 
+     private void createAndShowGUI() {
+         frame = new JFrame("Beginner Investing Simulator");
+         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         frame.setSize(1000, 700);
+         frame.setLayout(new BorderLayout());
+ 
+         // Top control panel
+         JPanel top = new JPanel();
+         top.setLayout(new FlowLayout(FlowLayout.LEFT));
+         top.add(new JLabel("Starting amount:"));
+         amountBox = new JComboBox<>(new String[] {"$15,000", "$10,000", "$5,000"});
+         top.add(amountBox);
+         fetchBtn = new JButton("Fetch recommendations (Yahoo Finance)");
+         top.add(fetchBtn);
+         buyBtn = new JButton("Buy recommended");
+         buyBtn.setEnabled(false);
+         top.add(buyBtn);
+         simulateBtn = new JButton("Run simulation (30 days)");
+         simulateBtn.setEnabled(false);
+         top.add(simulateBtn);
+         stepBtn = new JButton("Step 1 day");
+         stepBtn.setEnabled(false);
+         top.add(stepBtn);
+         animateBtn = new JButton("Animate");
+         animateBtn.setEnabled(false);
+         top.add(animateBtn);
+ 
+         frame.add(top, BorderLayout.NORTH);
+ 
+         // Left: explanation/log
+         log = new JTextArea();
+         log.setEditable(false);
+         log.setLineWrap(true);
+         JScrollPane logPane = new JScrollPane(log);
+         logPane.setPreferredSize(new Dimension(360, 0));
+         frame.add(logPane, BorderLayout.WEST);
+ 
+         // Center: chart panel
+         chartPanel = new ChartPanel();
+         frame.add(chartPanel, BorderLayout.CENTER);
+ 
+         // Bottom: stocks table
+         String[] cols = {"Symbol","Price","% Change (recent)","Why chosen"};
+         Object[][] data = new Object[WATCHLIST.length][4];
+         table = new JTable(data, cols);
+         JScrollPane tablePane = new JScrollPane(table);
+         tablePane.setPreferredSize(new Dimension(0, 160));
+         frame.add(tablePane, BorderLayout.SOUTH);
+ 
+         // Button actions
+         fetchBtn.addActionListener(e -> fetchRecommendations());
+         buyBtn.addActionListener(e -> buyRecommended());
+         simulateBtn.addActionListener(e -> runSimulation(30));
+         stepBtn.addActionListener(e -> stepSimulation(1));
+         animateBtn.addActionListener(e -> toggleAnimate());
+ 
+         frame.setVisible(true);
+ 
+         writeLog("Welcome! This simulator will fetch recent price moves from Yahoo Finance for a small watchlist, recommend top movers, and simulate a simple future price path. Start by choosing a starting amount and clicking 'Fetch recommendations'.");
+     }
+ 
+     private void writeLog(String s) {
+         SwingUtilities.invokeLater(() -> {
+             log.append(s + "\n\n");
+             log.setCaretPosition(log.getDocument().getLength());
+         });
+     }
+ 
+     // Fetch quotes from Yahoo Finance public quote endpoint and classify
+     private void fetchRecommendations() {
+         fetchBtn.setEnabled(false);
+         writeLog("Step 1 — fetching recent data from Yahoo Finance for a small, curated watchlist...");
+         CompletableFuture.runAsync(() -> {
+             try {
+                 List<StockInfo> infos = fetchQuotes(WATCHLIST);
+                 // sort by percent change descending
+                 infos.sort(Comparator.comparingDouble(StockInfo::getPercentChange).reversed());
+                 recommendedGood.clear();
+                 recommendedBad.clear();
+                 int topN = Math.min(3, infos.size());
+                 for (int i = 0; i < topN; i++) recommendedGood.add(infos.get(i));
+                 for (int i = 0; i < topN; i++) recommendedBad.add(infos.get(infos.size()-1-i));
+                 updateTable(infos);
+                 writeLog("Fetched " + infos.size() + " tickers. Top " + topN + " treated as 'good' (recent positive movers), bottom " + topN + " as 'bad' (recent negative movers).");
+                 explainRecommendations();
+                 SwingUtilities.invokeLater(() -> {
+                     buyBtn.setEnabled(true);
+                     simulateBtn.setEnabled(false);
+                     stepBtn.setEnabled(false);
+                     animateBtn.setEnabled(false);
+                 });
+             } catch (Exception ex) {
+                 writeLog("Error fetching data: " + ex.getMessage());
+                 ex.printStackTrace();
+             } finally {
+                 SwingUtilities.invokeLater(() -> fetchBtn.setEnabled(true));
+             }
+         });
+     }
+ 
+     private void explainRecommendations() {
+         writeLog("Step 2 — explanation (beginner-friendly):");
+         writeLog("We look at the most recent percent move for each stock. Stocks that have been rising recently may have momentum (short-term strength). " +
+                 "We call the top few 'good' for this demo (momentum-based pick). Stocks that have fallen recently are marked 'bad' — watch for value or further weakness.");
+         writeLog("Selection summary:");
+         writeLog("Good picks:");
+         for (StockInfo s : recommendedGood) {
+             writeLog("- " + s.symbol + ": price $" + String.format("%.2f", s.price) +
+                     ", recent change " + String.format("%.2f", s.percentChange) + "% — chosen because it is among the top recent movers.");
+         }
+         writeLog("Bad picks:");
+         for (StockInfo s : recommendedBad) {
+             writeLog("- " + s.symbol + ": price $" + String.format("%.2f", s.price) +
+                     ", recent change " + String.format("%.2f", s.percentChange) + "% — chosen because it is among the recent laggards.");
+         }
+         writeLog("Beginner tip: this is one simple filter (momentum). A safer real-world approach would include diversification, long-term fundamentals, and position sizing rules.");
+     }
+ 
+     private void updateTable(List<StockInfo> infos) {
+         SwingUtilities.invokeLater(() -> {
+             Object[][] data = new Object[infos.size()][4];
+             for (int i = 0; i < infos.size(); i++) {
+                 StockInfo s = infos.get(i);
+                 String reason = recommendedGood.contains(s) ? "Recommended (good recent move)"
+                               : recommendedBad.contains(s) ? "Avoid (recent weak move)"
+                               : "Neutral";
+                 data[i][0] = s.symbol;
+                 data[i][1] = "$" + String.format("%.2f", s.price);
+                 data[i][2] = String.format("%.2f%%", s.percentChange);
+                 data[i][3] = reason;
+             }
+             table.setModel(new javax.swing.table.DefaultTableModel(data, new String[] {"Symbol","Price","% Change (recent)","Why chosen"}));
+         });
+     }
+ 
+     // Simple portfolio purchase: allocate equally among recommendedGood
+     private void buyRecommended() {
+         if (recommendedGood.isEmpty()) {
+             writeLog("No recommendations available. Click 'Fetch recommendations' first.");
+             return;
+         }
+         double starting = parseAmount((String)amountBox.getSelectedItem());
+         portfolio = new Portfolio(starting);
+         writeLog("Step 3 — building a beginner portfolio using equal allocation across recommended picks.");
+         int buyCount = recommendedGood.size();
+         double perStock = starting / buyCount;
+         for (StockInfo s : recommendedGood) {
+             int shares = (int)(perStock / s.price);
+             if (shares <= 0) {
+                 writeLog("Not enough funds to buy a share of " + s.symbol + " at $" + String.format("%.2f", s.price) + ". Skipping.");
+             } else {
+                 portfolio.buy(s.symbol, s.price, shares);
+                 writeLog("Bought " + shares + " shares of " + s.symbol + " at $" + String.format("%.2f", s.price) + " (" + String.format("%.2f", shares * s.price) + ").");
+             }
+         }
+         writeLog("Portfolio cash remaining: $" + String.format("%.2f", portfolio.cash));
+         writeLog("Beginner tip: equal-dollar allocation is a simple starting rule. You can study position sizing and rebalancing later.");
+         chartPanel.clear();
+         chartPanel.setPortfolioHoldings(portfolio.holdings);
+         simulateBtn.setEnabled(true);
+         stepBtn.setEnabled(true);
+         animateBtn.setEnabled(true);
+     }
+ 
+     private double parseAmount(String label) {
+         return label.contains("15") ? 15000.0 : label.contains("10") ? 10000.0 : 5000.0;
+     }
+ 
+     // Run a multi-day simulation and display paths
+     private void runSimulation(int days) {
+         if (portfolio == null) {
+             writeLog("Please buy recommended stocks first.");
+             return;
+         }
+         writeLog("Step 4 — running a " + days + "-day simulation using a simple stochastic model.");
+         simulatedPaths.clear();
+         // For each holding, simulate a path using today's percent change magnitude as a proxy for daily volatility
+         for (Map.Entry<String, Holding> e : portfolio.holdings.entrySet()) {
+             String symbol = e.getKey();
+             double startPrice = e.getValue().price;
+             // find StockInfo to get recent percent change
+             Optional<StockInfo> info = recommendedGood.stream().filter(s -> s.symbol.equals(symbol)).findFirst();
+             double recentPct = info.map(StockInfo::getPercentChange).orElse(0.0);
+             Double[] path = simulatePath(startPrice, days, recentPct);
+             simulatedPaths.put(symbol, path);
+         }
+         chartPanel.setPaths(simulatedPaths);
+         chartPanel.repaint();
+         writeLog("Simulation created. Use 'Step 1 day' to move forward one day or 'Animate' to play automatically.");
+     }
+ 
+     private void stepSimulation(int days) {
+         chartPanel.step(days);
+         double total = chartPanel.currentPortfolioValue(portfolio);
+         writeLog("Step forward " + days + " day(s). Portfolio simulated value: $" + String.format("%.2f", total));
+     }
+ 
+     private void toggleAnimate() {
+         if (animating) {
+             animating = false;
+             animateBtn.setText("Animate");
+         } else {
+             animating = true;
+             animateBtn.setText("Stop");
+             CompletableFuture.runAsync(() -> {
+                 while (animating && chartPanel.hasMoreSteps()) {
+                     try {
+                         SwingUtilities.invokeLater(() -> {
+                             chartPanel.step(1);
+                             double total = chartPanel.currentPortfolioValue(portfolio);
+                             writeLog("Animated day: portfolio simulated value $" + String.format("%.2f", total));
+                         });
+                         Thread.sleep(600);
+                     } catch (InterruptedException ex) {
+                         Thread.currentThread().interrupt();
+                     }
+                 }
+                 animating = false;
+                 SwingUtilities.invokeLater(() -> animateBtn.setText("Animate"));
+             });
+         }
+     }
+ 
+     // Simulate a price path (simple model): use recent percent change magnitude as a volatility proxy
+     private Double[] simulatePath(double startPrice, int days, double recentPercent) {
+         Double[] path = new Double[days+1];
+         path[0] = startPrice;
+         double volProxy = Math.max(0.005, Math.abs(recentPercent) / 100.0); // e.g., 1% -> 0.01
+         Random rnd = new Random();
+         for (int d = 1; d <= days; d++) {
+             // daily return ~ Normal(0, volProxy) with a tiny upward drift
+             double dailyReturn = (rnd.nextGaussian() * volProxy) + (volProxy * 0.02);
+             double next = Math.max(0.01, path[d-1] * (1 + dailyReturn));
+             path[d] = next;
+         }
+         return path;
+     }
+ 
+     // Fetch multiple symbols' quotes using Yahoo Finance query endpoint.
+     private List<StockInfo> fetchQuotes(String[] symbols) throws Exception {
+         String joined = String.join(",", symbols);
+         String url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=" + URLEncoder.encode(joined, "UTF-8");
+         HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+         HttpRequest req = HttpRequest.newBuilder(URI.create(url)).GET().build();
+         HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+         if (resp.statusCode() != 200) {
+             throw new IOException("Yahoo request returned status " + resp.statusCode());
+         }
+         String body = resp.body();
+         List<StockInfo> infos = new ArrayList<>();
+         // Very small, robust parsing using regex for each symbol block
+         for (String sym : symbols) {
+             Pattern p = Pattern.compile("\\{[^}]*\"symbol\"\\s*:\\s*\"" + Pattern.quote(sym) + "\".*?\\}", Pattern.DOTALL);
+             Matcher m = p.matcher(body);
+             if (m.find()) {
+                 String block = m.group();
+                 double price = extractDouble(block, "\"regularMarketPrice\"\\s*:\\s*([0-9.+-Eed]+)");
+                 double pct = extractDouble(block, "\"regularMarketChangePercent\"\\s*:\\s*([0-9.+-Eed]+)");
+                 // Fallbacks if not present
+                 if (Double.isNaN(price)) price = extractDouble(block, "\"regularMarketPreviousClose\"\\s*:\\s*([0-9.+-Eed]+)");
+                 if (Double.isNaN(pct)) pct = 0.0;
+                 if (!Double.isNaN(price)) {
+                     infos.add(new StockInfo(sym, price, pct));
+                 } else {
+                     writeLog("Warning: couldn't parse price for " + sym + ". Skipping.");
+                 }
+             } else {
+                 writeLog("Warning: no data block for " + sym + " in response.");
+             }
+         }
+         return infos;
+     }
+ 
+     // Helper to extract first matched double; returns NaN if missing
+     private double extractDouble(String text, String regex) {
+         Pattern p = Pattern.compile(regex);
+         Matcher m = p.matcher(text);
+         if (m.find()) {
+             try {
+                 return Double.parseDouble(m.group(1));
+             } catch (NumberFormatException ex) {
+                 return Double.NaN;
+             }
+         }
+         return Double.NaN;
+     }
+ 
+     // Simple data classes
+     static class StockInfo {
+         String symbol;
+         double price;
+         double percentChange;
+         StockInfo(String s, double p, double pct) { symbol=s; price=p; percentChange=pct; }
+         double getPercentChange() { return percentChange; }
+     }
+ 
+     static class Portfolio {
+         double cash;
+         Map<String, Holding> holdings = new LinkedHashMap<>();
+         Portfolio(double starting) { cash = starting; }
+         void buy(String symbol, double price, int shares) {
+             double cost = price * shares;
+             if (cost > cash) return;
+             cash -= cost;
+             holdings.put(symbol, new Holding(symbol, price, shares));
+         }
+     }
+ 
+     static class Holding {
+         String symbol;
+         double price; // purchase price
+         int shares;
+         Holding(String s, double p, int q) { symbol=s; price=p; shares=q; }
+     }
+ 
+     // Panel for simple line chart
+     class ChartPanel extends JPanel {
+         Map<String, Double[]> paths = new LinkedHashMap<>();
+         int currentStep = 0;
+         Map<String, Color> colors = new HashMap<>();
+         Map<String, Holding> holdings = new LinkedHashMap<>();
+ 
+         ChartPanel() {
+             setBackground(Color.WHITE);
+         }
+ 
+         void setPortfolioHoldings(Map<String, Holding> h) {
+             holdings.clear();
+             holdings.putAll(h);
+         }
+ 
+         void setPaths(Map<String, Double[]> p) {
+             paths.clear();
+             paths.putAll(p);
+             currentStep = 0;
+             colors.clear();
+             Random r = new Random();
+             for (String s : paths.keySet()) {
+                 colors.put(s, new Color(50 + r.nextInt(180), 50 + r.nextInt(180), 50 + r.nextInt(180)));
+             }
+             repaint();
+         }
+ 
+         void clear() {
+             paths.clear();
+             colors.clear();
+             currentStep = 0;
+             repaint();
+         }
+ 
+         void step(int days) {
+             if (paths.isEmpty()) return;
+             currentStep = Math.min(maxPathLength()-1, currentStep + days);
+             repaint();
+         }
+ 
+         boolean hasMoreSteps() {
+             return currentStep < (maxPathLength()-1);
+         }
+ 
+         int maxPathLength() {
+             int m = 0;
+             for (Double[] arr : paths.values()) if (arr.length > m) m = arr.length;
+             return m;
+         }
+ 
+         double currentPortfolioValue(Portfolio p) {
+             double total = p.cash;
+             for (Map.Entry<String, Holding> e : p.holdings.entrySet()) {
+                 Double[] path = paths.get(e.getKey());
+                 if (path != null && path.length > currentStep) total += path[currentStep] * e.getValue().shares;
+                 else total += e.getValue().price * e.getValue().shares;
+             }
+             return total;
+         }
+ 
+         @Override
+         protected void paintComponent(Graphics g0) {
+             super.paintComponent(g0);
+             Graphics2D g = (Graphics2D)g0;
+             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+             int w = getWidth(), h = getHeight();
+             // axes
+             g.setColor(Color.LIGHT_GRAY);
+             g.fillRect(0,0,w,h);
+             g.setColor(Color.WHITE);
+             g.fillRect(40,20,w-60,h-60);
+             g.setColor(Color.DARK_GRAY);
+             g.drawRect(40,20,w-60,h-60);
+             if (paths.isEmpty()) {
+                 g.setColor(Color.BLACK);
+                 g.drawString("No simulation yet. Buy recommended and Run simulation to see the chart.", 60, 60);
+                 return;
+             }
+             int left = 40, top = 20, right = w-20, bottom = h-40;
+             // find min/max up to currentStep
+             double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
+             for (Double[] arr : paths.values()) {
+                 int upto = Math.min(currentStep, arr.length-1);
+                 for (int i = 0; i <= upto; i++) {
+                     min = Math.min(min, arr[i]);
+                     max = Math.max(max, arr[i]);
+                 }
+             }
+             if (min <= 0 || Double.isInfinite(min)) min = 0.01;
+             if (max <= min) max = min * 1.1;
+             // grid lines & labels
+             g.setColor(Color.LIGHT_GRAY);
+             for (int i = 0; i <= 4; i++) {
+                 int yy = top + i*(bottom-top)/4;
+                 g.drawLine(left, yy, right, yy);
+                 double val = max - (max-min)*(i/4.0);
+                 g.setColor(Color.DARK_GRAY);
+                 g.drawString(String.format("%.2f", val), 6, yy+4);
+                 g.setColor(Color.LIGHT_GRAY);
+             }
+             int steps = maxPathLength();
+             int usedSteps = Math.max(1, Math.min(currentStep+1, steps));
+             // draw each path
+             for (Map.Entry<String, Double[]> e : paths.entrySet()) {
+                 String sym = e.getKey();
+                 Double[] arr = e.getValue();
+                 g.setColor(colors.getOrDefault(sym, Color.BLUE));
+                 int len = Math.min(arr.length, currentStep+1);
+                 int prevX = -1, prevY = -1;
+                 for (int i = 0; i < len; i++) {
+                     int x = left + (i * (right-left)) / (steps-1);
+                     double v = arr[i];
+                     int y = top + (int)((max - v) / (max - min) * (bottom - top));
+                     if (prevX != -1) {
+                         g.setStroke(new BasicStroke(2f));
+                         g.drawLine(prevX, prevY, x, y);
+                     }
+                     prevX = x; prevY = y;
+                 }
+                 // label last point
+                 if (len > 0) {
+                     int x = left + ((len-1) * (right-left)) / (steps-1);
+                     double v = arr[len-1];
+                     int y = top + (int)((max - v) / (max - min) * (bottom - top));
+                     g.fillOval(x-3, y-3, 6, 6);
+                     g.drawString(sym + " $" + String.format("%.2f", v), x+6, y-6);
+                 }
+             }
+             // current day label
+             g.setColor(Color.BLACK);
+             g.drawString("Day " + currentStep + " of " + (steps-1), left + 6, bottom + 20);
+         }
+     }
+ }
