@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 04: Risk & Reward — SuperStox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Inter, Arial, sans-serif;
+            color: #f5f7ff;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(80, 120, 255, 0.25), transparent 30%),
+                radial-gradient(circle at 90% 20%, rgba(150, 70, 255, 0.20), transparent 30%),
+                radial-gradient(circle at 50% 100%, rgba(40, 200, 180, 0.12), transparent 35%),
+                #070914;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.18;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .orb.one {
+            width: 300px;
+            height: 300px;
+            background: #4777ff;
+            top: 10%;
+            left: -100px;
+        }
+
+        .orb.two {
+            width: 350px;
+            height: 350px;
+            background: #a64dff;
+            right: -120px;
+            top: 40%;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.065);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.25),
+                inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+        }
+
+        .navbar {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(1100px, calc(100% - 30px));
+            padding: 12px 18px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #ffffff, #9daeff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .back-button {
+            color: white;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 10px 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: 0.25s;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .container {
+            width: min(1100px, calc(100% - 30px));
+            margin: auto;
+            padding-top: 120px;
+            padding-bottom: 60px;
+        }
+
+        .lesson-page {
+            padding: 40px;
+            border-radius: 28px;
+        }
+
+        .lesson-title {
+            font-size: clamp(36px, 6vw, 56px);
+            letter-spacing: -2px;
+            margin-bottom: 30px;
+            background: linear-gradient(90deg, #ffffff, #9daeff, #d6b5ff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .lesson-content {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .lesson-content p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .lesson-content strong {
+            color: #ffffff;
+        }
+
+        .key-points {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .key-points h3 {
+            color: #9daeff;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .key-points ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .key-points li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+            color: rgba(255,255,255,0.75);
+        }
+
+        .key-points li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #7de0b0;
+            font-weight: bold;
+        }
+
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="orb one"></div>
+<div class="orb two"></div>
+
+<nav class="navbar glass">
+    <div class="logo">SuperStox</div>
+    <a href="SuperStox.html" class="back-button">← Back to Home</a>
+</nav>
+
+<div class="container">
+    <div class="lesson-page glass">
+        <h1 class="lesson-title">Lesson 04: Risk & Reward</h1>
+
+        <div class="lesson-content">
+            <p>
+                One of the most fundamental principles in finance is the relationship between <strong>risk and reward</strong>. The basic concept is simple: in general, higher potential returns require accepting higher risk. This relationship exists because investors need to be compensated for taking on uncertainty. If you could get the same 10% annual return from a U.S. Treasury bond as from a risky biotech startup stock, of course everyone would choose the Treasury bond with its government guarantee. Since people don't make that choice en masse, it's because they correctly assess that the startup stock is much riskier. The market prices assets to reflect this trade-off: safer investments offer lower potential returns, while riskier investments must offer higher expected returns to attract investors willing to take the chance.
+            </p>
+
+            <p>
+                Understanding your personal <strong>risk tolerance</strong> is crucial to building an appropriate investment portfolio. Risk tolerance depends on several factors: your age (younger investors can typically afford more risk because they have more time to recover from downturns), your financial situation (if you need the money in five years, you can't afford large losses), your investment goals (retirement savings vs. vacation fund), and your psychological temperament (some people sleep fine with market volatility while others get stressed). A 25-year-old saving for retirement at age 65 can afford to be aggressive, with most investments in stocks, because even a 50% market crash gives them decades to recover. A 60-year-old near retirement, however, needs more conservative investments because there's limited time to recover from large losses.
+            </p>
+
+            <p>
+                Different investment types carry different levels of risk. <strong>Bonds</strong> issued by stable governments are generally lower-risk because they provide fixed payments and have priority in bankruptcy. <strong>Large-cap stocks</strong> (established companies) are generally moderate-risk—they fluctuate but are usually more stable than smaller companies. <strong>Small-cap stocks</strong> are higher-risk because smaller companies are more vulnerable to downturns and competition. <strong>Emerging market stocks</strong> are higher-risk because they operate in less stable political and economic environments. <strong>Speculative investments</strong> like penny stocks, options, or individual startup equity can be extremely risky. Importantly, higher risk doesn't mean the investment will necessarily perform better—it just means there's more uncertainty and volatility in the outcome.
+            </p>
+
+            <p>
+                A critical misconception is that diversification eliminates risk. It doesn't—it just reduces <strong>unsystematic risk</strong> (company-specific risk that varies randomly). What diversification cannot eliminate is <strong>systematic risk</strong> (market-wide risk that affects all stocks together). No amount of stock diversification will protect you from a market-wide crash. However, diversifying across different asset classes—stocks, bonds, and cash—can help protect you, since stocks and bonds often move in opposite directions. During stock market crashes, bond prices often rise as investors flee to safety, providing a cushion. This is why a balanced portfolio with both stocks and bonds may have lower volatility than an all-stock portfolio, despite possibly lower expected returns.
+            </p>
+
+            <p>
+                The key to managing risk and reward is matching your investment strategy to your specific situation and goals. This means honestly assessing your risk tolerance, choosing an appropriate asset allocation, maintaining a long-term perspective, and resisting the urge to change strategy based on short-term market movements. Young investors with stable income and a 30+ year timeline might target 80-90% stocks and 10-20% bonds. Mid-career investors might go 60% stocks and 40% bonds. Near-retirees might shift to 40% stocks and 60% bonds. The specifics don't matter as much as having a clear strategy that you can stick with through good times and bad. Remember, the biggest risk for most investors isn't the stock market fluctuating—it's not investing enough at all.
+            </p>
+
+            <div class="key-points">
+                <h3>Key Takeaways</h3>
+                <ul>
+                    <li>Higher potential returns require accepting higher risk</li>
+                    <li>Risk tolerance depends on age, financial situation, timeline, and personality</li>
+                    <li>Different investments carry different levels of risk</li>
+                    <li>Diversification reduces unsystematic risk but not systematic market risk</li>
+                    <li>Match your asset allocation to your personal risk tolerance and timeline</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div>© 2026 SuperStox — Learn • Explore • Master</div>
+</footer>
+
+</body>
+</html>

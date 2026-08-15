@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 08: ETFs & Mutual Funds — SuperStox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Inter, Arial, sans-serif;
+            color: #f5f7ff;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(80, 120, 255, 0.25), transparent 30%),
+                radial-gradient(circle at 90% 20%, rgba(150, 70, 255, 0.20), transparent 30%),
+                radial-gradient(circle at 50% 100%, rgba(40, 200, 180, 0.12), transparent 35%),
+                #070914;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.18;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .orb.one {
+            width: 300px;
+            height: 300px;
+            background: #4777ff;
+            top: 10%;
+            left: -100px;
+        }
+
+        .orb.two {
+            width: 350px;
+            height: 350px;
+            background: #a64dff;
+            right: -120px;
+            top: 40%;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.065);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.25),
+                inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+        }
+
+        .navbar {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(1100px, calc(100% - 30px));
+            padding: 12px 18px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #ffffff, #9daeff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .back-button {
+            color: white;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 10px 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: 0.25s;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .container {
+            width: min(1100px, calc(100% - 30px));
+            margin: auto;
+            padding-top: 120px;
+            padding-bottom: 60px;
+        }
+
+        .lesson-page {
+            padding: 40px;
+            border-radius: 28px;
+        }
+
+        .lesson-title {
+            font-size: clamp(36px, 6vw, 56px);
+            letter-spacing: -2px;
+            margin-bottom: 30px;
+            background: linear-gradient(90deg, #ffffff, #9daeff, #d6b5ff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .lesson-content {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .lesson-content p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .lesson-content strong {
+            color: #ffffff;
+        }
+
+        .key-points {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .key-points h3 {
+            color: #9daeff;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .key-points ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .key-points li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+            color: rgba(255,255,255,0.75);
+        }
+
+        .key-points li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #7de0b0;
+            font-weight: bold;
+        }
+
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="orb one"></div>
+<div class="orb two"></div>
+
+<nav class="navbar glass">
+    <div class="logo">SuperStox</div>
+    <a href="SuperStox.html" class="back-button">← Back to Home</a>
+</nav>
+
+<div class="container">
+    <div class="lesson-page glass">
+        <h1 class="lesson-title">Lesson 08: ETFs & Mutual Funds</h1>
+
+        <div class="lesson-content">
+            <p>
+                <strong>ETFs (Exchange-Traded Funds)</strong> and <strong>mutual funds</strong> are investment vehicles that pool money from many investors to purchase a diversified portfolio of stocks, bonds, or other securities. Instead of buying individual stocks, you buy shares in a fund that owns hundreds or thousands of securities. This instant diversification is one of their greatest advantages—a single $100 investment in a total market ETF gives you exposure to 3,500+ U.S. companies, something impossible to achieve through individual stock purchases without spending thousands of dollars. For beginners, this makes funds the easiest path to a well-diversified portfolio. You don't need to research and analyze individual companies, pick winners and losers, or worry about any single holding's failure.
+            </p>
+
+            <p>
+                The main difference between ETFs and mutual funds comes down to how they're traded and how tax-efficient they are. <strong>Mutual funds</strong> are bought directly from the fund company at the end of the trading day at a price called the Net Asset Value (NAV). You can only buy or sell at this once-daily price, and purchases or sales within the fund can trigger capital gains taxes that are distributed to all shareholders. <strong>ETFs</strong> trade on stock exchanges throughout the day like regular stocks, at prices determined by supply and demand (which closely track the fund's NAV). Additionally, ETFs have structural advantages that make them more tax-efficient—you typically won't realize capital gains even if other investors are buying and selling. For most individual investors, ETFs are the superior choice due to their tax efficiency, trading flexibility, and typically lower fees.
+            </p>
+
+            <p>
+                There are two main types of funds: <strong>actively managed</strong> and <strong>index-based (passive)</strong>. Actively managed funds employ professional fund managers who research stocks and try to beat market benchmarks by selecting winners and avoiding losers. Passive index funds simply own all (or a representative sample) of the securities in a particular market index, like the S&P 500, NASDAQ, or total bond market. Index funds have much lower fees because they require minimal human decision-making—a computer simply matches the fund's holdings to the index. The research overwhelmingly shows that, over long periods, low-cost index funds outperform most actively managed funds after accounting for fees. Studies by Morningstar and others consistently show that only 5-10% of actively managed funds beat their benchmark index over 10+ year periods, and most of that outperformance appears to be luck rather than skill. Given these odds, index funds are the rational choice for most investors.
+            </p>
+
+            <p>
+                Building a complete portfolio using just a few ETFs is entirely feasible and recommended for beginners. A simple three-ETF portfolio might consist of: (1) A U.S. total stock market ETF like VTI or VTSAX, (2) An international stock market ETF like VXUS or VTIAX, and (3) A total bond market ETF like BND or VBTLX. Adjusting the allocation among these three based on your age and risk tolerance—perhaps 70% stocks and 30% bonds for someone in their 30s, or 40% stocks and 60% bonds for someone nearing retirement—gives you complete diversification across all major asset classes and geographies. You might add a real estate ETF (VGSLX) for additional diversification, but even the three-fund portfolio is more than sufficient for most investors.
+            </p>
+
+            <p>
+                The psychological benefit of using ETFs cannot be overstated. By owning diversified funds rather than individual stocks, you're less likely to obsess over daily price movements or panic sell during market downturns. You avoid the emotional pain of seeing individual stocks crash, because your losses are spread across hundreds of holdings. More importantly, you avoid the false confidence trap—the belief that you can pick winners when statistically you probably can't. By embracing index funds and ETFs, you're acknowledging reality and positioning yourself to succeed through time, diversification, and low costs rather than through superior stock-picking skill. For 99% of investors, this is the path to long-term wealth.
+            </p>
+
+            <div class="key-points">
+                <h3>Key Takeaways</h3>
+                <ul>
+                    <li>ETFs and mutual funds provide instant diversification with a single purchase</li>
+                    <li>ETFs are more tax-efficient and tradable than mutual funds</li>
+                    <li>Index funds outperform most actively managed funds over time</li>
+                    <li>A simple 3-4 fund portfolio can provide complete diversification</li>
+                    <li>Funds reduce emotional decision-making and encourage long-term investing</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div>© 2026 SuperStox — Learn • Explore • Master</div>
+</footer>
+
+</body>
+</html>
