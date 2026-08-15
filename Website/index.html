@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>InvestEasy — Learn Investing</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <header class="site-header glass">
+      <div>
+        <h1>InvestEasy</h1>
+        <p>Practical investing for beginners — explore, learn, participate.</p>
+      </div>
+    </header>
+
+    <nav class="tabs glass">
+      <button data-tab="overview" class="active">Overview</button>
+      <button data-tab="markets">Markets</button>
+      <button data-tab="portfolio">Portfolio</button>
+      <button data-tab="learn">Learn</button>
+      <button data-tab="upload">Upload</button>
+    </nav>
+
+    <main>
+      <section id="overview" class="tab-content active glass">
+        <h2>Welcome</h2>
+        <p>Investing can be simple. Start small, diversify, and learn by doing.</p>
+        <ul class="quick-list">
+          <li><strong>Stocks:</strong> Ownership in companies.</li>
+          <li><strong>Bonds:</strong> Loans to governments/companies.</li>
+          <li><strong>ETFs:</strong> Baskets of assets for instant diversification.</li>
+        </ul>
+        <p class="cta">Try the interactive tabs to explore markets and simulate a portfolio.</p>
+      </section>
+
+      <section id="markets" class="tab-content glass">
+        <h2>Markets Explorer</h2>
+        <div class="controls">
+          <label for="datasetSelect">Sample symbol:</label>
+          <select id="datasetSelect"></select>
+          <label for="daysRange">Days:</label>
+          <input id="daysRange" type="range" min="30" max="720" value="180">
+          <span id="daysVal">180</span>
+        </div>
+        <canvas id="marketChart" height="160"></canvas>
+      </section>
+
+      <section id="portfolio" class="tab-content glass">
+        <h2>Portfolio Simulator</h2>
+        <p>Adjust allocations and see simulated growth (past performance is not predictive).</p>
+        <div class="alloc">
+          <label>Stocks <input type="range" id="stocksRange" min="0" max="100" value="60"> <span id="stocksVal">60%</span></label>
+          <label>Bonds <input type="range" id="bondsRange" min="0" max="100" value="30"> <span id="bondsVal">30%</span></label>
+          <label>Cash <input type="range" id="cashRange" min="0" max="100" value="10"> <span id="cashVal">10%</span></label>
+        </div>
+        <canvas id="portfolioChart" height="160"></canvas>
+      </section>
+
+      <section id="learn" class="tab-content glass">
+        <h2>Learn</h2>
+        <div class="accordion">
+          <details><summary>What is a stock?</summary><p>A stock is a share of ownership in a company. Stocks can rise and fall with company performance.</p></details>
+          <details><summary>What is diversification?</summary><p>Diversification spreads investments across assets to reduce risk.</p></details>
+          <details><summary>How to start</summary><p>Open a brokerage account, start with small amounts, use ETFs for broad exposure.</p></details>
+        </div>
+      </section>
+
+      <section id="upload" class="tab-content glass">
+        <h2>Upload Data / App File</h2>
+        <p>Upload a CSV with two columns: <em>Date,Price</em> (YYYY-MM-DD) to plot. You can also drop an app file below.</p>
+        <input type="file" id="fileInput" accept=".csv,application/zip,application/octet-stream" />
+        <div id="uploadStatus" class="upload-status"></div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
