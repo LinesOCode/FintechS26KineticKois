@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
 
-public class SuperStoxUI {
+class SuperStoxUI {
     private JFrame frame;
     private CardLayout cardLayout;
     private JPanel cards;

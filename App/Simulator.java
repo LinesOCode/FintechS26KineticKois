@@ -27,7 +27,7 @@
  import java.util.concurrent.*;
  
  // Single-file Swing application
- public class InvestingSimulator {
+ public class Simulator {
      private static final String[] WATCHLIST = {
          "AAPL","MSFT","AMZN","GOOGL","NVDA","TSLA","META","JNJ","JPM","V"
      };
@@ -45,7 +45,7 @@
      private volatile boolean animating = false;
  
      public static void main(String[] args) {
-         SwingUtilities.invokeLater(() -> new InvestingSimulator().createAndShowGUI());
+         SwingUtilities.invokeLater(() -> new Simulator().createAndShowGUI());
      }
  
      private void createAndShowGUI() {

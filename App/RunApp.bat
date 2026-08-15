@@ -58,16 +58,28 @@ goto end
 :run_app
 echo Using Java from: %RUN_JAVA%
 "%RUN_JAVA%" -jar KineticKois.jar
+
+echo.
+echo Compiling custom simulator and UI files...
+:: Dynamically find javac.exe using your working java.exe folder path
+set "COMPILER_JAVA=%RUN_JAVA:java.exe=javac.exe%"
+"%COMPILER_JAVA%" InvestingSimulator.java SuperStoxUI.java
+if %errorlevel% neq 0 (
+    echo [ERROR] Code compilation failed. Please verify syntax.
+    goto end
+)
+
 echo.
 echo Running Simulator...
-"%RUN_JAVA%" -cp . Simulator
+start "" "%RUN_JAVA%" InvestingSimulator
+
 echo.
 echo Running UI...
-"%RUN_JAVA%" -cp . UI
+start "" "%RUN_JAVA%" SuperStoxUI
 
 if errorlevel 1 (
     echo.
-    echo [ERROR] Java found, but KineticKois.jar, Simulator, or UI failed to launch or crashed.
+    echo [ERROR] Java found, but one or more application components failed to launch or crashed.
 )
 
 :end
