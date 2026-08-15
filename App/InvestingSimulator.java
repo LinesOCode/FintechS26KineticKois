@@ -291,11 +291,11 @@
          String joined = String.join(",", symbols);
          String url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=" + URLEncoder.encode(joined, "UTF-8");
          HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
-         HttpRequest req = HttpRequest.newBuilder(URI.create(url)).GET().build();HttpRequest req = HttpRequest.newBuilder(URI.create(url))
-    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-    .header("Accept", "text/html,application/json")
-    .GET()
-    .build();
+         HttpRequest req = HttpRequest.newBuilder(URI.create(url))
+             .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+             .header("Accept", "text/html,application/json")
+             .GET()
+             .build();
 
          HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
          if (resp.statusCode() != 200) {
