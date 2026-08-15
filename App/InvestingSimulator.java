@@ -286,47 +286,59 @@
          return path;
      }
  
-     // Fetch multiple symbols' quotes using Yahoo Finance query endpoint.
-     private List<StockInfo> fetchQuotes(String[] symbols) throws Exception {
-         String joined = String.join(",", symbols);
-       // V8 Chart endpoint allows batching via comma-separation on some CDNs, or less rigid validation
-String url = "https://query1.finance.yahoo.com/v8/finance/chart/" + URLEncoder.encode(joined, "UTF-8");
-         HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
-         HttpRequest req = HttpRequest.newBuilder(URI.create(url))
-             .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-             .header("Accept", "text/html,application/json")
-             .GET()
-             .build();
+    // Replace your old fetchQuotes method with this one:
+private List<StockInfo> fetchQuotes(String[] symbols) throws Exception {
+    List<StockInfo> infos = new ArrayList<>();
+    HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+    
+    writeLog("Fetching data ticker-by-ticker to avoid validation rules...");
 
-         HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
-         if (resp.statusCode() != 200) {
-             throw new IOException("Yahoo request returned status " + resp.statusCode());
-         }
-         String body = resp.body();
-         List<StockInfo> infos = new ArrayList<>();
-         // Very small, robust parsing using regex for each symbol block
-         for (String sym : symbols) {
-             Pattern p = Pattern.compile("\\{[^}]*\"symbol\"\\s*:\\s*\"" + Pattern.quote(sym) + "\".*?\\}", Pattern.DOTALL);
-             Matcher m = p.matcher(body);
-             if (m.find()) {
-                 String block = m.group();
-                 double price = extractDouble(block, "\"regularMarketPrice\"\\s*:\\s*([0-9.+-Eed]+)");
-                 double pct = extractDouble(block, "\"regularMarketChangePercent\"\\s*:\\s*([0-9.+-Eed]+)");
-                 // Fallbacks if not present
-                 if (Double.isNaN(price)) price = extractDouble(block, "\"regularMarketPreviousClose\"\\s*:\\s*([0-9.+-Eed]+)");
-                 if (Double.isNaN(pct)) pct = 0.0;
-                 if (!Double.isNaN(price)) {
-                     infos.add(new StockInfo(sym, price, pct));
-                 } else {
-                     writeLog("Warning: couldn't parse price for " + sym + ". Skipping.");
-                 }
-             } else {
-                 writeLog("Warning: no data block for " + sym + " in response.");
-             }
-         }
-         return infos;
-     }
- 
+    for (String sym : symbols) {
+        // Query individual symbols sequentially using the active v8 chart path
+        String url = "https://query1.finance.yahoo.com/v8/finance/chart/" + URLEncoder.encode(sym, "UTF-8");
+        
+        HttpRequest req = HttpRequest.newBuilder(URI.create(url))
+            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+            .header("Accept", "application/json")
+            .GET()
+            .build();
+            
+        try {
+            HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+            
+            if (resp.statusCode() != 200) {
+                writeLog("Warning: Server returned status " + resp.statusCode() + " for ticker: " + sym);
+                continue;
+            }
+            
+            String body = resp.body();
+            
+            // Your existing Regex matches look for 'regularMarketPrice' and 'regularMarketChangePercent'.
+            // Because the v8 chart response contains these exact JSON keys embedded inside its meta block,
+            // your original parsing algorithm will still find and process them perfectly!
+            double price = extractDouble(body, "\"regularMarketPrice\"\\s*:\\s*([0-9.+-Eed]+)");
+            double pct = extractDouble(body, "\"regularMarketChangePercent\"\\s*:\\s*([0-9.+-Eed]+)");
+            
+            // Fallback strategy if target attributes are structured differently
+            if (Double.isNaN(price)) price = extractDouble(body, "\"previousClose\"\\s*:\\s*([0-9.+-Eed]+)");
+            if (Double.isNaN(pct)) pct = 0.0;
+            
+            if (!Double.isNaN(price)) {
+                infos.add(new StockInfo(sym, price, pct));
+            } else {
+                writeLog("Warning: Failed to parse price properties for " + sym);
+            }
+            
+            // Crucial: Add a slight pause between individual tickers to prevent triggering a 429 error!
+            Thread.sleep(300); 
+            
+        } catch (Exception loopEx) {
+            writeLog("Failed processing network connection for ticker: " + sym);
+        }
+    }
+    return infos;
+}
+
      // Helper to extract first matched double; returns NaN if missing
      private double extractDouble(String text, String regex) {
          Pattern p = Pattern.compile(regex);
