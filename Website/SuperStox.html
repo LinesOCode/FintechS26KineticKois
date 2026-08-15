@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SuperStox — Investing Made Understandable</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Inter, Arial, sans-serif;
+            color: #f5f7ff;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(80, 120, 255, 0.25), transparent 30%),
+                radial-gradient(circle at 90% 20%, rgba(150, 70, 255, 0.20), transparent 30%),
+                radial-gradient(circle at 50% 100%, rgba(40, 200, 180, 0.12), transparent 35%),
+                #070914;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* =========================
+           BACKGROUND
+        ========================== */
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.18;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .orb.one {
+            width: 300px;
+            height: 300px;
+            background: #4777ff;
+            top: 10%;
+            left: -100px;
+        }
+
+        .orb.two {
+            width: 350px;
+            height: 350px;
+            background: #a64dff;
+            right: -120px;
+            top: 40%;
+        }
+
+        /* =========================
+           GLASS
+        ========================== */
+
+        .glass {
+            background: rgba(255, 255, 255, 0.065);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.25),
+                inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+        }
+
+        /* =========================
+           NAVBAR
+        ========================== */
+
+        .navbar {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(1100px, calc(100% - 30px));
+            padding: 12px 18px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #ffffff, #9daeff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 6px;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 10px 13px;
+            border-radius: 12px;
+            transition: 0.25s;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.09);
+            color: white;
+        }
+
+        .nav-download {
+            background: white;
+            color: #111827 !important;
+            font-weight: 700;
+        }
+
+        .nav-download:hover {
+            background: #e8ebff !important;
+        }
+
+        /* =========================
+           GENERAL
+        ========================== */
+
+        .container {
+            width: min(1100px, calc(100% - 30px));
+            margin: auto;
+        }
+
+        section {
+            padding: 110px 0;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #b8c4ff;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            font-size: clamp(48px, 8vw, 88px);
+            line-height: 0.98;
+            letter-spacing: -5px;
+            max-width: 850px;
+        }
+
+        h2 {
+            font-size: clamp(34px, 5vw, 56px);
+            letter-spacing: -2px;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #ffffff, #9daeff, #d6b5ff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            margin-top: 25px;
+            max-width: 650px;
+            color: rgba(255,255,255,0.62);
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .section-intro {
+            max-width: 650px;
+            color: rgba(255,255,255,0.58);
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================== */
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-weight: 700;
+            transition: 0.25s;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #0a0d19;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(255,255,255,0.15);
+        }
+
+        .btn-secondary {
+            color: white;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* =========================
+           HERO
+        ========================== */
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 150px;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-card {
+            border-radius: 28px;
+            padding: 25px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .stock-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .stock-price {
+            font-size: 32px;
+            font-weight: 800;
+            margin-top: 5px;
+        }
+
+        .stock-change {
+            color: #7de0b0;
+            font-size: 14px;
+        }
+
+        .fake-chart {
+            height: 260px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fake-chart svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255,255,255,0.35);
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        /* =========================
+           STATS
+        ========================== */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 50px;
+        }
+
+        .stat {
+            padding: 22px;
+            border-radius: 20px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .stat-label {
+            color: rgba(255,255,255,0.5);
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        /* =========================
+           LEARNING
+        ========================== */
+
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .lesson {
+            padding: 25px;
+            border-radius: 22px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .lesson:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.09);
+        }
+
+        .lesson-number {
+            color: #9eafff;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .lesson p {
+            color: rgba(255,255,255,0.52);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* =========================
+           INTERACTIVE CARDS
+        ========================== */
+
+        .interactive-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .interactive-card {
+            padding: 30px;
+            border-radius: 25px;
+        }
+
+        .interactive-card p {
+            color: rgba(255,255,255,0.55);
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* =========================
+           RANGE
+        ========================== */
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: white;
+            cursor: pointer;
+        }
+
+        .range-value {
+            font-size: 42px;
+            font-weight: 800;
+            margin: 20px 0;
+        }
+
+        /* =========================
+           GROWTH GRAPH
+        ========================== */
+
+        .growth-chart {
+            height: 220px;
+            margin-top: 20px;
+            position: relative;
+            border-left: 1px solid rgba(255,255,255,0.12);
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .growth-line {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .growth-line svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* =========================
+           PORTFOLIO CALCULATOR
+        ========================== */
+
+        .portfolio-calc {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.04);
+        }
+
+        .calc-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .calc-row label {
+            flex: 0 0 120px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .calc-row input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+
+        .calc-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.07);
+            color: #7de0b0;
+            font-weight: 700;
+        }
+
+        /* =========================
+           MARKET VOLATILITY
+        ========================== */
+
+        .volatility-demo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .volatility-item {
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .volatility-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 8px;
+        }
+
+        .volatility-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: white;
+        }
+
+        /* =========================
+           APP
+        ========================== */
+
+        .app-section {
+            text-align: center;
+        }
+
+        .app-card {
+            padding: 70px 30px;
+            border-radius: 35px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-card h2 {
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .app-card p {
+            max-width: 600px;
+            margin: auto;
+            color: rgba(255,255,255,0.58);
+            line-height: 1.7;
+        }
+
+        .download-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* =========================
+           FILE UPLOAD
+        ========================== */
+
+        .upload-area {
+            margin-top: 40px;
+            padding: 35px;
+            border: 1px dashed rgba(255,255,255,0.25);
+            border-radius: 20px;
+            background: rgba(255,255,255,0.03);
+            transition: 0.25s;
+        }
+
+        .upload-area:hover {
+            background: rgba(255,255,255,0.06);
+        }
+
+        .upload-icon {
+            font-size: 35px;
+            margin-bottom: 12px;
+        }
+
+        .upload-area p {
+            margin-bottom: 15px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-name {
+            margin-top: 15px;
+            color: #aab7ff;
+            font-size: 14px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================== */
+
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================== */
+
+        @media (max-width: 850px) {
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-grid,
+            .interactive-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .lesson-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                letter-spacing: -3px;
+            }
+        }
+
+        @media (max-width: 550px) {
+
+            section {
+                padding: 80px 0;
+            }
+
+            .lesson-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding-top: 120px;
+            }
+
+            .hero-card {
+                padding: 18px;
+            }
+
+            .fake-chart {
+                height: 200px;
+            }
+
+            .calc-row {
+                flex-direction: column;
+            }
+
+            .calc-row label {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="orb one"></div>
+<div class="orb two"></div>
+
+<!-- =========================
+     NAVIGATION
+========================= -->
+
+<nav class="navbar glass">
+
+    <div class="logo">
+        SuperStox
+    </div>
+
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#learn">Learn</a>
+        <a href="#explore">Explore</a>
+        <a href="#app" class="nav-download">Get App</a>
+    </div>
+
+</nav>
+
+
+<!-- =========================
+     HERO
+========================= -->
+
+<section class="hero" id="home">
+
+    <div class="container hero-grid">
+
+        <div>
+
+            <div class="eyebrow">
+                FINANCE, SIMPLIFIED
+            </div>
+
+            <h1>
+                Investing doesn't have to feel like
+                <span class="gradient-text">another language.</span>
+            </h1>
+
+            <p class="subtitle">
+                Learn how stocks, markets, risk, and investing actually work
+                through interactive lessons and experiments — without risking
+                real money.
+            </p>
+
+            <div class="buttons">
+
+                <a href="#learn" class="btn btn-primary">
+                    Start Learning →
+                </a>
+
+                <a href="#app" class="btn btn-secondary">
+                    Explore the App
+                </a>
+
+            </div>
+
+            <div class="stats">
+
+                <div class="stat glass">
+                    <div class="stat-number">01</div>
+                    <div class="stat-label">Master the fundamentals</div>
+                </div>
+
+                <div class="stat glass">
+                    <div class="stat-number">02</div>
+                    <div class="stat-label">Experiment with tools</div>
+                </div>
+
+                <div class="stat glass">
+                    <div class="stat-number">03</div>
+                    <div class="stat-label">Build confidence</div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- HERO CHART -->
+
+        <div class="hero-card glass">
+
+            <div class="chart-header">
+
+                <div>
+                    <div class="stock-name">Market Example</div>
+                    <div class="stock-price">$142.87</div>
+                    <div class="stock-change">+4.82% today</div>
+                </div>
+
+                <div>📈</div>
+
+            </div>
+
+            <div class="fake-chart">
+
+                <svg viewBox="0 0 500 260" preserveAspectRatio="none">
+
+                    <polyline
+                        points="0,220 40,200 80,210 120,170 160,185 200,130 240,145 280,110 320,120 360,70 400,90 440,50 500,30"
+                        fill="none"
+                        stroke="white"
+                        stroke-width="4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+
+                </svg>
+
+            </div>
+
+            <div class="chart-labels">
+                <span>9:30</span>
+                <span>12:00</span>
+                <span>3:00</span>
+                <span>4:00</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     LEARN
+========================= -->
+
+<section id="learn">
+
+    <div class="container">
+
+        <div class="eyebrow">LEARN</div>
+
+        <h2>Start from zero.</h2>
+
+        <p class="section-intro">
+            No finance vocabulary required. Learn the concepts behind
+            investing one step at a time, with simple explanations and
+            interactive examples. Click any lesson to explore in depth.
+        </p>
+
+
+        <div class="lesson-grid">
+
+            <a href="lesson-01.html" style="text-decoration: none;">
+                <div class="lesson glass">
+
+                    <div class="lesson-number">LESSON 01</div>
+
+                    <h3>What is a stock?</h3>
+
+                    <p>
+                        Understand what it actually means to own a piece of a
+                        company.
+                    </p>
+
+                </div>
+            </a>
+
+
+            <a href="lesson-02.html" style="text-decoration: none;">
+                <div class="lesson glass">
+
+                    <div class="lesson-number">LESSON 02</div>
+
+                    <h3>How markets work</h3>
+
+                    <p>
+                        Learn why prices move and how buyers and sellers interact.
+                    </p>
+
+                </div>
+            </a>
+
+
+            <a href="lesson-03.html" style="text-decoration: none;">
+                <div class="lesson glass">
+
+                    <div class="lesson-number">LESSON 03</div>
+
+                    <h3>Investing vs. trading</h3>
+
+                    <p>
+                        Understand the difference between long-term investing
+                        and short-term trading.
+                    </p>
+
+                </div>
+            </a>
+
+
+            <a href="lesson-04.html" style="text-decoration: none;">
+                <div class="lesson glass">
+
+                    <div class="lesson-number">LESSON 04</div>
+
+                    <h3>Risk & reward</h3>
+
+                    <p>
+                        Learn why higher potential returns often come with
+                        greater uncertainty.
+                    </p>
+
+                </div>
+            </a>
+
+
+            <a href="lesson-05.html" style="text-decoration: none;">
+                <div class="lesson glass">
+
+                    <div class="lesson-number">LESSON 05</div>
+
+                    <h3>Diversification</h3>
+
+                    <p>
+                        Discover why spreading investments across different assets
+                        can help reduce overall portfolio risk.
+                    </p>
+
+                </div>
+            </a>
+
+
+            <a href="lesson-06.html" style="text-decoration: none;">
+                <div class="lesson glass">
+
+                    <div class="lesson-number">LESSON 06</div>
+
+                    <h3>Compound growth</h3>
+
+                    <p>
+                        See how money can grow exponentially over long periods
+                        of time through the power of compounding.
+                    </p>
+
+                </div>
+            </a>
+
+
+            <a href="lesson-07.html" style="text-decoration: none;">
+                <div class="lesson glass">
+
+                    <div class="lesson-number">LESSON 07</div>
+
+                    <h3>Bonds & fixed income</h3>
+
+                    <p>
+                        Learn about bonds, how they differ from stocks, and their
+                        role in a balanced investment portfolio.
+                    </p>
+
+                </div>
+            </a>
+
+
+            <a href="lesson-08.html" style="text-decoration: none;">
+                <div class="lesson glass">
+
+                    <div class="lesson-number">LESSON 08</div>
+
+                    <h3>ETFs & mutual funds</h3>
+
+                    <p>
+                        Understand how to invest in many companies at once through
+                        funds that pool investor money.
+                    </p>
+
+                </div>
+            </a>
+
+
+            <a href="lesson-09.html" style="text-decoration: none;">
+                <div class="lesson glass">
+
+                    <div class="lesson-number">LESSON 09</div>
+
+                    <h3>Dollar-cost averaging</h3>
+
+                    <p>
+                        Discover how investing the same amount regularly can help
+                        reduce risk and build wealth systematically.
+                    </p>
+
+                </div>
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     EXPLORE
+========================= -->
+
+<section id="explore">
+
+    <div class="container">
+
+        <div class="eyebrow">INTERACTIVE LAB</div>
+
+        <h2>Don't just read it.</h2>
+
+        <p class="section-intro">
+            Move the controls. Change the variables. See what happens.
+            Understanding money becomes much easier when you can experiment
+            with it.
+        </p>
+
+
+        <div class="interactive-grid">
+
+
+            <!-- COMPOUND GROWTH -->
+
+            <div class="interactive-card glass">
+
+                <h3>📈 Compound Growth</h3>
+
+                <p>
+                    See how changing the amount of time affects hypothetical
+                    growth. This visualization assumes a 5% annual return.
+                </p>
+
+                <label>
+                    Years:
+                </label>
+
+                <input
+                    type="range"
+                    id="years"
+                    min="1"
+                    max="40"
+                    value="10"
+                >
+
+                <div class="range-value">
+                    <span id="yearsValue">10</span> years
+                </div>
+
+                <div>
+                    Hypothetical value:
+                    <strong id="growthValue">$1,629</strong>
+                </div>
+
+                <div class="growth-chart">
+
+                    <div class="growth-line">
+
+                        <svg viewBox="0 0 500 220" preserveAspectRatio="none">
+
+                            <polyline
+                                id="growthPath"
+                                points=""
+                                fill="none"
+                                stroke="white"
+                                stroke-width="4"
+                            />
+
+                        </svg>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RISK -->
+
+            <div class="interactive-card glass">
+
+                <h3>⚖️ Risk & Reward</h3>
+
+                <p>
+                    Higher potential returns don't come without uncertainty.
+                    Move the slider to explore a simplified example.
+                </p>
+
+                <label>
+                    Potential return:
+                </label>
+
+                <input
+                    type="range"
+                    id="riskSlider"
+                    min="1"
+                    max="10"
+                    value="5"
+                >
+
+                <div class="range-value">
+                    <span id="riskValue">5</span>/10
+                </div>
+
+                <h3 id="riskTitle">
+                    Moderate Risk
+                </h3>
+
+                <p id="riskDescription">
+                    This represents a middle-ground example. Real investments
+                    involve uncertainty and can lose value.
+                </p>
+
+            </div>
+
+
+            <!-- PORTFOLIO CALCULATOR -->
+
+            <div class="interactive-card glass">
+
+                <h3>💰 Savings Goal Calculator</h3>
+
+                <p>
+                    Calculate how much you need to save monthly to reach your
+                    investment goal.
+                </p>
+
+                <div class="portfolio-calc">
+
+                    <div class="calc-row">
+                        <label>Target Amount:</label>
+                        <input type="number" id="targetAmount" placeholder="$100,000" value="100000">
+                    </div>
+
+                    <div class="calc-row">
+                        <label>Years to Goal:</label>
+                        <input type="number" id="yearsToGoal" placeholder="10" value="10">
+                    </div>
+
+                    <div class="calc-row">
+                        <label>Annual Return (%):</label>
+                        <input type="number" id="annualReturn" placeholder="5" value="5">
+                    </div>
+
+                    <div class="calc-result" id="calcResult">
+                        Monthly savings needed: $0
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MARKET VOLATILITY -->
+
+            <div class="interactive-card glass">
+
+                <h3>📊 Market Volatility Simulator</h3>
+
+                <p>
+                    See how a $10,000 investment might fluctuate over time in
+                    different market conditions.
+                </p>
+
+                <label>
+                    Market Condition:
+                </label>
+
+                <div style="display: flex; gap: 10px; margin: 15px 0;">
+                    <button class="btn btn-secondary" onclick="updateVolatility('stable')">Stable</button>
+                    <button class="btn btn-secondary" onclick="updateVolatility('moderate')">Moderate</button>
+                    <button class="btn btn-secondary" onclick="updateVolatility('volatile')">Volatile</button>
+                </div>
+
+                <div class="volatility-demo">
+                    <div class="volatility-item">
+                        <div class="volatility-label">Current Value</div>
+                        <div class="volatility-value" id="volatilityValue">$10,000</div>
+                    </div>
+                    <div class="volatility-item">
+                        <div class="volatility-label">Change</div>
+                        <div class="volatility-value" id="volatilityChange">0%</div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     APP
+========================= -->
+
+<section id="app" class="app-section">
+
+    <div class="container">
+
+        <div class="app-card glass">
+
+            <div class="eyebrow">
+                TAKE IT WITH YOU
+            </div>
+
+            <h2>
+                Your investing journey doesn't end here.
+            </h2>
+
+            <p>
+                Learn the basics here, then take your knowledge further
+                with the full SuperStox app — designed to help beginners
+                explore financial markets in a simple and approachable way.
+                Track portfolios, receive personalized insights, and stay
+                informed with market news curated for learning.
+            </p>
+
+
+            <div class="download-buttons">
+
+                <a href="#" class="btn btn-primary">
+                    📱 Download for Mobile
+                </a>
+
+                <a href="#" class="btn btn-secondary">
+                    💻 Download for Desktop
+                </a>
+
+            </div>
+
+
+            <!-- FILE UPLOAD -->
+
+            <div class="upload-area">
+
+                <div class="upload-icon">
+                    📦
+                </div>
+
+                <h3>
+                    Have an app file?
+                </h3>
+
+                <p>
+                    Choose your app file to attach it to this page.
+                </p>
+
+                <label for="fileInput" class="btn btn-secondary">
+                    Choose File
+                </label>
+
+                <input
+                    type="file"
+                    id="fileInput"
+                    accept=".apk,.exe,.dmg,.zip"
+                >
+
+                <div
+                    class="file-name"
+                    id="fileName"
+                >
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <div class="container footer-inner">
+
+        <div>
+            © 2026 SuperStox
+        </div>
+
+        <div>
+            Learn • Explore • Master
+        </div>
+
+    </div>
+
+</footer>
+
+
+<script>
+
+    /* =========================
+       COMPOUND GROWTH
+    ========================== */
+
+    const yearsSlider = document.getElementById("years");
+    const yearsValue = document.getElementById("yearsValue");
+    const growthValue = document.getElementById("growthValue");
+    const growthPath = document.getElementById("growthPath");
+
+    function updateGrowth() {
+
+        const years = Number(yearsSlider.value);
+
+        yearsValue.textContent = years;
+
+        /*
+            This is only a simplified educational visualization.
+            It is NOT a prediction of actual investment returns.
+        */
+
+        const startingMoney = 1000;
+        const rate = 0.05;
+
+        const finalValue =
+            startingMoney * Math.pow(1 + rate, years);
+
+        growthValue.textContent =
+            "$" + Math.round(finalValue).toLocaleString();
+
+        let points = "";
+
+        for (let i = 0; i <= years; i++) {
+
+            const value =
+                startingMoney * Math.pow(1 + rate, i);
+
+            const x =
+                (i / years) * 500;
+
+            const normalized =
+                (value - startingMoney) /
+                (finalValue - startingMoney || 1);
+
+            const y =
+                205 - normalized * 180;
+
+            points += `${x},${y} `;
+
+        }
+
+        growthPath.setAttribute("points", points);
+
+    }
+
+    yearsSlider.addEventListener("input", updateGrowth);
+
+    updateGrowth();
+
+
+    /* =========================
+       RISK SLIDER
+    ========================== */
+
+    const riskSlider =
+        document.getElementById("riskSlider");
+
+    const riskValue =
+        document.getElementById("riskValue");
+
+    const riskTitle =
+        document.getElementById("riskTitle");
+
+    const riskDescription =
+        document.getElementById("riskDescription");
+
+
+    function updateRisk() {
+
+        const value =
+            Number(riskSlider.value);
+
+        riskValue.textContent = value;
+
+        if (value <= 3) {
+
+            riskTitle.textContent =
+                "Lower Risk Example";
+
+            riskDescription.textContent =
+                "Lower-risk investments may have less price volatility, but lower risk does not mean no risk. Think of bonds and stable dividend stocks.";
+
+        } else if (value <= 7) {
+
+            riskTitle.textContent =
+                "Moderate Risk";
+
+            riskDescription.textContent =
+                "This represents a middle-ground example. A balanced portfolio of stocks and bonds. Real investments involve uncertainty and can lose value.";
+
+        } else {
+
+            riskTitle.textContent =
+                "Higher Risk Example";
+
+            riskDescription.textContent =
+                "Higher potential returns can come with larger price swings and a greater possibility of loss. Growth stocks and emerging markets are examples.";
+
+        }
+
+    }
+
+    riskSlider.addEventListener("input", updateRisk);
+
+    updateRisk();
+
+
+    /* =========================
+       SAVINGS GOAL CALCULATOR
+    ========================== */
+
+    const targetInput = document.getElementById("targetAmount");
+    const yearsInput = document.getElementById("yearsToGoal");
+    const returnInput = document.getElementById("annualReturn");
+    const calcResult = document.getElementById("calcResult");
+
+    function calculateSavings() {
+        const target = parseFloat(targetInput.value) || 100000;
+        const years = parseFloat(yearsInput.value) || 10;
+        const annualRate = (parseFloat(returnInput.value) || 5) / 100;
+        const months = years * 12;
+        const monthlyRate = annualRate / 12;
+
+        // Future value of annuity formula: PMT = FV / [((1 + r)^n - 1) / r]
+        let monthlySavings;
+        if (monthlyRate === 0) {
+            monthlySavings = target / months;
+        } else {
+            monthlySavings = target / (((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate));
+        }
+
+        calcResult.textContent = `Monthly savings needed: $${Math.round(monthlySavings).toLocaleString()}`;
+    }
+
+    targetInput.addEventListener("input", calculateSavings);
+    yearsInput.addEventListener("input", calculateSavings);
+    returnInput.addEventListener("input", calculateSavings);
+
+    calculateSavings();
+
+
+    /* =========================
+       MARKET VOLATILITY SIMULATOR
+    ========================== */
+
+    function updateVolatility(condition) {
+        let change;
+        
+        if (condition === 'stable') {
+            change = (Math.random() - 0.5) * 4;
+        } else if (condition === 'moderate') {
+            change = (Math.random() - 0.5) * 12;
+        } else {
+            change = (Math.random() - 0.5) * 30;
+        }
+
+        const newValue = 10000 + (10000 * change / 100);
+        const valueEl = document.getElementById("volatilityValue");
+        const changeEl = document.getElementById("volatilityChange");
+
+        valueEl.textContent = "$" + Math.round(newValue).toLocaleString();
+        changeEl.textContent = (change >= 0 ? "+" : "") + change.toFixed(1) + "%";
+        changeEl.style.color = change >= 0 ? "#7de0b0" : "#ff6b6b";
+    }
+
+
+    /* =========================
+       FILE UPLOAD
+    ========================== */
+
+    const fileInput =
+        document.getElementById("fileInput");
+
+    const fileName =
+        document.getElementById("fileName");
+
+
+    fileInput.addEventListener("change", function() {
+
+        if (this.files.length > 0) {
+
+            fileName.textContent =
+                "Selected: " + this.files[0].name;
+
+        } else {
+
+            fileName.textContent = "";
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>

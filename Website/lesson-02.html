@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 02: How Markets Work — SuperStox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Inter, Arial, sans-serif;
+            color: #f5f7ff;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(80, 120, 255, 0.25), transparent 30%),
+                radial-gradient(circle at 90% 20%, rgba(150, 70, 255, 0.20), transparent 30%),
+                radial-gradient(circle at 50% 100%, rgba(40, 200, 180, 0.12), transparent 35%),
+                #070914;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.18;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .orb.one {
+            width: 300px;
+            height: 300px;
+            background: #4777ff;
+            top: 10%;
+            left: -100px;
+        }
+
+        .orb.two {
+            width: 350px;
+            height: 350px;
+            background: #a64dff;
+            right: -120px;
+            top: 40%;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.065);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.25),
+                inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+        }
+
+        .navbar {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(1100px, calc(100% - 30px));
+            padding: 12px 18px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #ffffff, #9daeff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .back-button {
+            color: white;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 10px 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: 0.25s;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .container {
+            width: min(1100px, calc(100% - 30px));
+            margin: auto;
+            padding-top: 120px;
+            padding-bottom: 60px;
+        }
+
+        .lesson-page {
+            padding: 40px;
+            border-radius: 28px;
+        }
+
+        .lesson-title {
+            font-size: clamp(36px, 6vw, 56px);
+            letter-spacing: -2px;
+            margin-bottom: 30px;
+            background: linear-gradient(90deg, #ffffff, #9daeff, #d6b5ff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .lesson-content {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .lesson-content p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .lesson-content strong {
+            color: #ffffff;
+        }
+
+        .key-points {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .key-points h3 {
+            color: #9daeff;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .key-points ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .key-points li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+            color: rgba(255,255,255,0.75);
+        }
+
+        .key-points li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #7de0b0;
+            font-weight: bold;
+        }
+
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="orb one"></div>
+<div class="orb two"></div>
+
+<nav class="navbar glass">
+    <div class="logo">SuperStox</div>
+    <a href="SuperStox.html" class="back-button">← Back to Home</a>
+</nav>
+
+<div class="container">
+    <div class="lesson-page glass">
+        <h1 class="lesson-title">Lesson 02: How Markets Work</h1>
+
+        <div class="lesson-content">
+            <p>
+                At its core, the stock market is a system that connects buyers and sellers of company stocks through electronic exchanges. The fundamental mechanism is simple: <strong>supply and demand</strong>. When more people want to buy a particular stock than sell it, the price goes up. Conversely, when more people want to sell than buy, the price goes down. This price discovery mechanism ensures that stocks are continuously valued based on what participants in the market believe they're worth right now. This real-time pricing is crucial because it reflects collective investor sentiment about a company's future prospects, incorporating all available information about the company's financial health, competitive position, and industry trends.
+            </p>
+
+            <p>
+                Stock exchanges like the NYSE, NASDAQ, and others act as intermediaries that facilitate these transactions. These aren't physical marketplaces where traders meet face-to-face (though they have historic roots there)—they're sophisticated digital networks that match buy and sell orders almost instantaneously. When you place an order to buy or sell a stock, your broker (a licensed firm that handles trading for you) submits this order to the exchange. The exchange's matching engine automatically pairs your order with someone else's order at the best available price, completing the transaction in milliseconds. This high-speed, high-volume trading capability is why stock prices can fluctuate so rapidly throughout the trading day.
+            </p>
+
+            <p>
+                Understanding <strong>market hours and trading sessions</strong> is important for any investor. Major U.S. stock exchanges operate during regular market hours (9:30 AM to 4:00 PM EST, Monday through Friday), but there's also an extended hours trading session before and after these times. When markets close in one part of the world, they open in another—stock exchanges in Tokyo, London, Hong Kong, and other financial centers create a global, 24-hour marketplace. News and events that occur outside regular market hours can still impact stock prices, which is why opening prices often differ from previous closing prices. This global nature of markets means that events in one part of the world can affect stock prices elsewhere, creating both opportunities and risks for investors.
+            </p>
+
+            <p>
+                Price movements are influenced by both <strong>fundamental factors</strong> (company earnings, competitive advantages, management quality) and <strong>psychological factors</strong> (investor sentiment, fear, optimism). A company might announce better-than-expected earnings, but if investors were already expecting that result, the stock might not move much. Conversely, a company might miss earnings expectations, and the stock might fall sharply. This shows that markets price in not just what happened, but what investors expected to happen. Over the long term, stock prices tend to follow company fundamentals—strong, profitable companies tend to increase in value while struggling companies decline. However, in the short term, price movements can be chaotic and driven by emotions.
+            </p>
+
+            <p>
+                For individual investors, understanding how markets work means recognizing that they're both rational and irrational at times. Markets reward patient, long-term investors who focus on fundamentals and ignore short-term price noise. They punish traders who try to time the market or react emotionally to every price fluctuation. By understanding the mechanics of supply and demand, the role of exchanges, and the factors influencing prices, you can make more informed investment decisions and avoid common psychological traps that lead to poor financial outcomes.
+            </p>
+
+            <div class="key-points">
+                <h3>Key Takeaways</h3>
+                <ul>
+                    <li>Stock prices are determined by supply and demand in real-time</li>
+                    <li>Exchanges are digital networks that match buy and sell orders instantly</li>
+                    <li>Markets operate globally across multiple time zones, creating 24-hour trading</li>
+                    <li>Both fundamental and psychological factors influence stock prices</li>
+                    <li>Long-term investors benefit more from understanding fundamentals than timing markets</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div>© 2026 SuperStox — Learn • Explore • Master</div>
+</footer>
+
+</body>
+</html>
