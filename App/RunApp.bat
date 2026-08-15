@@ -13,17 +13,23 @@ if exist "%JAVA_PATH%" (
     echo.
     echo Running Simulator...
     "%JAVA_PATH%" -cp . Simulator
+    echo.
+    echo Running UI...
+    "%JAVA_PATH%" -cp . UI
 ) else if exist "%ALT_JAVA_PATH%" (
     "%ALT_JAVA_PATH%" -jar KineticKois.jar
     echo.
     echo Running Simulator...
     "%ALT_JAVA_PATH%" -cp . Simulator
+    echo.
+    echo Running UI...
+    "%ALT_JAVA_PATH%" -cp . UI
 ) else (
     echo [ERROR] Cannot find Java. Please ensure the openjdk folder is unzipped.
 )
 
 if errorlevel 1 (
     echo.
-    echo [ERROR] Java found, but KineticKois.jar or Simulator failed to launch or crashed.
+    echo [ERROR] Java found, but KineticKois.jar, Simulator, or UI failed to launch or crashed.
 )
 pause
