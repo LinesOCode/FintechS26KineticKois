@@ -14,19 +14,20 @@
   review the step-by-step explanation, then "Buy recommended" and "Run simulation".
  */
  
+ import javax.swing.*;
  import java.awt.*;
- import java.io.*;
+ import java.awt.event.*;
  import java.net.*;
  import java.net.http.*;
  import java.time.*;
  import java.util.*;
  import java.util.List;
- import java.util.concurrent.*;
  import java.util.regex.*;
- import javax.swing.*;
+ import java.io.*;
+ import java.util.concurrent.*;
  
  // Single-file Swing application
- public class Simulator {
+ public class InvestingSimulator {
      private static final String[] WATCHLIST = {
          "AAPL","MSFT","AMZN","GOOGL","NVDA","TSLA","META","JNJ","JPM","V"
      };
@@ -44,7 +45,7 @@
      private volatile boolean animating = false;
  
      public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Simulator().createAndShowGUI());
+         SwingUtilities.invokeLater(() -> new InvestingSimulator().createAndShowGUI());
      }
  
      private void createAndShowGUI() {
