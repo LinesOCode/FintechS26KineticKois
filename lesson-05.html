@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 05: Diversification — SuperStox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Inter, Arial, sans-serif;
+            color: #f5f7ff;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(80, 120, 255, 0.25), transparent 30%),
+                radial-gradient(circle at 90% 20%, rgba(150, 70, 255, 0.20), transparent 30%),
+                radial-gradient(circle at 50% 100%, rgba(40, 200, 180, 0.12), transparent 35%),
+                #070914;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.18;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .orb.one {
+            width: 300px;
+            height: 300px;
+            background: #4777ff;
+            top: 10%;
+            left: -100px;
+        }
+
+        .orb.two {
+            width: 350px;
+            height: 350px;
+            background: #a64dff;
+            right: -120px;
+            top: 40%;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.065);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.25),
+                inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+        }
+
+        .navbar {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(1100px, calc(100% - 30px));
+            padding: 12px 18px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #ffffff, #9daeff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .back-button {
+            color: white;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 10px 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: 0.25s;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .container {
+            width: min(1100px, calc(100% - 30px));
+            margin: auto;
+            padding-top: 120px;
+            padding-bottom: 60px;
+        }
+
+        .lesson-page {
+            padding: 40px;
+            border-radius: 28px;
+        }
+
+        .lesson-title {
+            font-size: clamp(36px, 6vw, 56px);
+            letter-spacing: -2px;
+            margin-bottom: 30px;
+            background: linear-gradient(90deg, #ffffff, #9daeff, #d6b5ff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .lesson-content {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .lesson-content p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .lesson-content strong {
+            color: #ffffff;
+        }
+
+        .key-points {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .key-points h3 {
+            color: #9daeff;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .key-points ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .key-points li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+            color: rgba(255,255,255,0.75);
+        }
+
+        .key-points li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #7de0b0;
+            font-weight: bold;
+        }
+
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="orb one"></div>
+<div class="orb two"></div>
+
+<nav class="navbar glass">
+    <div class="logo">SuperStox</div>
+    <a href="index.html" class="back-button">← Back to Home</a>
+</nav>
+
+<div class="container">
+    <div class="lesson-page glass">
+        <h1 class="lesson-title">Lesson 05: Diversification</h1>
+
+        <div class="lesson-content">
+            <p>
+                <strong>Diversification</strong> is the investment principle of spreading your money across different investments to reduce risk. The logic behind diversification is captured in the famous saying, "Don't put all your eggs in one basket." If you invest all your money in a single stock and that company goes bankrupt, you lose everything. If you invest in a hundred different stocks and one goes bankrupt, the impact is minimal. This principle applies not just to individual stocks, but to asset classes (stocks vs. bonds), sectors (technology vs. healthcare vs. finance), and geographies (U.S. vs. international). Different investments respond differently to various economic conditions, so combining them creates a portfolio that's more stable and predictable than any single investment alone.
+            </p>
+
+            <p>
+                There are multiple dimensions to effective diversification. <strong>Asset class diversification</strong> means mixing stocks (which typically have higher volatility and higher long-term returns) with bonds (which typically have lower volatility and lower long-term returns) and possibly cash (which has minimal volatility but very low returns). A typical portfolio might be 60% stocks and 40% bonds, with the exact mix depending on age and risk tolerance. <strong>Sector diversification</strong> means not putting all your stock holdings into technology companies; instead, you might include energy, healthcare, consumer goods, and industrial companies. <strong>Geographic diversification</strong> means including international stocks, since economic conditions in different countries don't always move together. <strong>Company size diversification</strong> means mixing large-cap, mid-cap, and small-cap stocks, since they often have different performance patterns.
+            </p>
+
+            <p>
+                A powerful benefit of diversification is that it can actually <strong>increase expected returns while reducing volatility</strong>. Consider two investments: Investment A has a 50% chance of returning 20% and a 50% chance of returning -10%, with an expected return of 5% and high volatility. Investment B has a 50% chance of returning 5% and a 50% chance of returning 5%, with an expected return of 5% and zero volatility. If these investments are uncorrelated (they don't move together), combining them gives you a portfolio with 5% expected return but lower volatility than either alone. This is why a portfolio of diverse stocks and bonds can have an expected return between the two asset classes but with lower volatility than either alone—your returns become smoother and more predictable.
+            </p>
+
+            <p>
+                For the beginning investor, diversification is easiest to achieve through <strong>index funds</strong> or <strong>ETFs</strong> (exchange-traded funds) rather than picking individual stocks. A single low-cost S&P 500 index fund gives you exposure to 500 large-cap U.S. companies instantly. A total market index fund gives you exposure to the entire U.S. market (thousands of companies). International index funds give you exposure to stocks outside the U.S. A total bond market fund gives you exposure to thousands of bonds. By combining a few index funds, a beginner can achieve excellent diversification with minimal effort, minimal cost, and minimal need for ongoing management or research. This passive approach to diversification has been proven to outperform most active stock pickers and is recommended by leading investment experts.
+            </p>
+
+            <p>
+                Important caveat: diversification reduces but does not eliminate risk. In a severe market crash, most stocks fall together (they're all exposed to the same systematic market risk), so diversification among stocks won't help much. However, a diversified portfolio that includes bonds, real estate, or other assets can provide more protection during stock market crashes since those assets often rise when stocks fall. The lesson is that diversification is powerful and essential, but it's not magical—it simply means your returns will be more moderate, more stable, and more predictable than concentrating all your money in a few bets. For most people saving for long-term goals, that's exactly the right approach.
+            </p>
+
+            <div class="key-points">
+                <h3>Key Takeaways</h3>
+                <ul>
+                    <li>Diversification spreads investment risk across different investments</li>
+                    <li>Diversify across asset classes, sectors, geographies, and company sizes</li>
+                    <li>Diversification can reduce volatility while maintaining expected returns</li>
+                    <li>Index funds and ETFs make diversification easy and low-cost</li>
+                    <li>Diversification reduces unsystematic risk but not systematic market risk</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div>© 2026 SuperStox — Learn • Explore • Master</div>
+</footer>
+
+</body>
+</html>
