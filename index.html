@@ -1886,6 +1886,8 @@ ${quiz(
 1
 )}
 
+${digInDeeperButton(1)}
+
 ${lessonEnd(1)}
 
 `
@@ -1992,6 +1994,8 @@ ${quiz(
 0
 )}
 
+${digInDeeperButton(2)}
+
 ${lessonEnd()}
 
 `
@@ -2096,6 +2100,8 @@ ${quiz(
 0
 )}
 
+${digInDeeperButton(3)}
+
 ${lessonEnd(3)}
 
 `
@@ -2179,6 +2185,8 @@ ${quiz(
 ],
 1
 )}
+
+${digInDeeperButton(4)}
 
 ${lessonEnd(4)}
 
@@ -2314,6 +2322,8 @@ ${quiz(
 2
 )}
 
+${digInDeeperButton(5)}
+
 ${lessonEnd()}
 
 `
@@ -2414,6 +2424,8 @@ ${quiz(
 ],
 0
 )}
+
+${digInDeeperButton(6)}
 
 ${lessonEnd(6)}
 
@@ -2526,6 +2538,8 @@ ${quiz(
 1
 )}
 
+${digInDeeperButton(7)}
+
 ${lessonEnd(7)}
 
 `
@@ -2619,6 +2633,8 @@ ${quiz(
 ],
 1
 )}
+
+${digInDeeperButton(8)}
 
 ${lessonEnd(8)}
 
@@ -2754,6 +2770,8 @@ ${quiz(
 0
 )}
 
+${digInDeeperButton(9)}
+
 ${lessonEnd(9)}
 
 `
@@ -2846,15 +2864,32 @@ class="btn btn-primary"
 >
 Continue with SuperStox →
 </a>
+</div>
 
+</div>
+
+`;
+
+}
+
+
+/* =========================================================
+   DIG IN DEEPER BUTTON
+========================================================= */
+
+function digInDeeperButton(lessonNumber) {
+
+const lessonFile = `lesson-${String(lessonNumber).padStart(2, '0')}.html`;
+
+return `
+
+<div style="margin: 30px 0;">
 <a
 href="${lessonFile}"
 class="btn btn-secondary"
 >
 Dig In Deeper →
 </a>
-</div>
-
 </div>
 
 `;
