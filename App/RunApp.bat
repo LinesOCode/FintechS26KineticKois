@@ -45,6 +45,9 @@ if exist "%JAVA_PATH%" (
 if errorlevel 1 (
     echo.
     echo [ERROR] Java found, but KineticKois.jar, Simulator, or UI failed to launch or crashed.
+<<<<<<< HEAD
+>>>>>>> bb8827446c536c9367b6d8d12029e60594807f1f
+=======
 >>>>>>> bb8827446c536c9367b6d8d12029e60594807f1f
 )
 
