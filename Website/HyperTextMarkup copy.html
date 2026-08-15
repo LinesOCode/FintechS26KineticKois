@@ -1,0 +1,3552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SuperStox — Investing Made Understandable</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Inter, Arial, sans-serif;
+            color: #f5f7ff;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(80,120,255,.25), transparent 30%),
+                radial-gradient(circle at 90% 20%, rgba(150,70,255,.20), transparent 30%),
+                radial-gradient(circle at 50% 100%, rgba(40,200,180,.12), transparent 35%),
+                #070914;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* =========================
+           BACKGROUND
+        ========================== */
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: .18;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .orb.one {
+            width: 300px;
+            height: 300px;
+            background: #4777ff;
+            top: 10%;
+            left: -100px;
+        }
+
+        .orb.two {
+            width: 350px;
+            height: 350px;
+            background: #a64dff;
+            right: -120px;
+            top: 40%;
+        }
+
+        /* =========================
+           GLASS
+        ========================== */
+
+        .glass {
+            background: rgba(255,255,255,.065);
+            border: 1px solid rgba(255,255,255,.12);
+            box-shadow:
+                0 20px 60px rgba(0,0,0,.25),
+                inset 0 1px 1px rgba(255,255,255,.05);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+        }
+
+        /* =========================
+           NAVBAR
+        ========================== */
+
+        .navbar {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(1100px,calc(100% - 30px));
+            padding: 12px 18px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .logo span {
+            opacity: .55;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 6px;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,.7);
+            text-decoration: none;
+            padding: 10px 13px;
+            border-radius: 12px;
+            transition: .25s;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,.09);
+            color: white;
+        }
+
+        .nav-download {
+            background: white;
+            color: #111827 !important;
+            font-weight: 700;
+        }
+
+        /* =========================
+           GENERAL
+        ========================== */
+
+        .container {
+            width: min(1100px,calc(100% - 30px));
+            margin: auto;
+        }
+
+        section {
+            padding: 110px 0;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.07);
+            border: 1px solid rgba(255,255,255,.1);
+            color: #b8c4ff;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            font-size: clamp(48px,8vw,88px);
+            line-height: .98;
+            letter-spacing: -5px;
+            max-width: 850px;
+        }
+
+        h2 {
+            font-size: clamp(34px,5vw,56px);
+            letter-spacing: -2px;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(
+                90deg,
+                #ffffff,
+                #9daeff,
+                #d6b5ff
+            );
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            margin-top: 25px;
+            max-width: 650px;
+            color: rgba(255,255,255,.62);
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .section-intro {
+            max-width: 650px;
+            color: rgba(255,255,255,.58);
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================== */
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-weight: 700;
+            transition: .25s;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #0a0d19;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(255,255,255,.15);
+        }
+
+        .btn-secondary {
+            color: white;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.12);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,.1);
+        }
+
+        /* =========================
+           HERO
+        ========================== */
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 150px;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.15fr .85fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-card {
+            border-radius: 28px;
+            padding: 25px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .stock-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .stock-price {
+            font-size: 32px;
+            font-weight: 800;
+            margin-top: 5px;
+        }
+
+        .stock-change {
+            color: #7de0b0;
+            font-size: 14px;
+        }
+
+        .fake-chart {
+            height: 260px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fake-chart svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255,255,255,.35);
+            font-size: 11px;
+        }
+
+        /* =========================
+           STATS
+        ========================== */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 15px;
+            margin-top: 50px;
+        }
+
+        .stat {
+            padding: 22px;
+            border-radius: 20px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .stat-label {
+            color: rgba(255,255,255,.5);
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        /* =========================
+           LESSON CARDS
+        ========================== */
+
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 16px;
+        }
+
+        .lesson {
+            padding: 25px;
+            border-radius: 22px;
+            transition: .3s;
+        }
+
+        .lesson:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,.09);
+        }
+
+        .lesson-number {
+            color: #9eafff;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .lesson p {
+            color: rgba(255,255,255,.52);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .lesson-button {
+            margin-top: 22px;
+            width: 100%;
+        }
+
+        /* =========================
+           FULL LESSON
+        ========================== */
+
+        #lessonArea {
+            display: none;
+            margin-top: 40px;
+        }
+
+        .full-lesson {
+            padding: 40px;
+            border-radius: 28px;
+            animation: lessonAppear .45s ease;
+        }
+
+        @keyframes lessonAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .lesson-header {
+            border-bottom: 1px solid rgba(255,255,255,.1);
+            padding-bottom: 25px;
+            margin-bottom: 30px;
+        }
+
+        .lesson-content {
+            max-width: 800px;
+        }
+
+        .lesson-content p {
+            color: rgba(255,255,255,.68);
+            line-height: 1.85;
+            font-size: 16px;
+            margin-bottom: 22px;
+        }
+
+        .lesson-content strong {
+            color: white;
+        }
+
+        .lesson-example {
+            padding: 30px;
+            border-radius: 22px;
+            margin: 30px 0;
+            background: rgba(255,255,255,.045);
+            border: 1px solid rgba(255,255,255,.09);
+        }
+
+        /* =========================
+           INTERACTIVE ELEMENTS
+        ========================== */
+
+        .ownership-display {
+            display: flex;
+            gap: 3px;
+            height: 75px;
+            margin: 25px 0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .ownership-piece {
+            flex: 1;
+            background: rgba(255,255,255,.1);
+            transition: .2s;
+        }
+
+        .ownership-piece.owned {
+            background: rgba(130,150,255,.85);
+        }
+
+        .ownership-result {
+            font-size: 26px;
+            font-weight: 800;
+            margin-top: 15px;
+        }
+
+        .market-demo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .market-side {
+            padding: 20px;
+            border-radius: 16px;
+            background: rgba(255,255,255,.05);
+        }
+
+        .market-number {
+            font-size: 30px;
+            font-weight: 800;
+            margin: 10px 0;
+        }
+
+        .market-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.06);
+            line-height: 1.6;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .comparison-box {
+            padding: 25px;
+            border-radius: 18px;
+            background: rgba(255,255,255,.05);
+        }
+
+        .comparison-box ul {
+            margin-top: 15px;
+            padding-left: 20px;
+            color: rgba(255,255,255,.6);
+            line-height: 2;
+        }
+
+        .risk-bar {
+            height: 18px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.08);
+            overflow: hidden;
+        }
+
+        .risk-fill {
+            height: 100%;
+            width: 50%;
+            border-radius: 999px;
+            background: linear-gradient(
+                90deg,
+                #7de0b0,
+                #ffe28a,
+                #ff8f9e
+            );
+            transition: .3s;
+        }
+
+        .risk-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            color: rgba(255,255,255,.45);
+            font-size: 13px;
+        }
+
+        .portfolio-row {
+            margin-bottom: 18px;
+        }
+
+        .portfolio-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 7px;
+        }
+
+        .portfolio-bar {
+            height: 14px;
+            background: rgba(255,255,255,.08);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .portfolio-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: rgba(150,170,255,.8);
+            transition: width .3s;
+        }
+
+        /* =========================
+           BOND DEMO
+        ========================== */
+
+        .bond-card {
+            padding: 25px;
+            border-radius: 20px;
+            background: rgba(255,255,255,.05);
+        }
+
+        .bond-amount {
+            font-size: 36px;
+            font-weight: 800;
+            margin: 12px 0;
+        }
+
+        .bond-timeline {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .timeline-point {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(150,170,255,.9);
+            flex-shrink: 0;
+        }
+
+        .timeline-line {
+            height: 3px;
+            flex: 1;
+            background: rgba(255,255,255,.15);
+        }
+
+        .bond-results {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 10px;
+        }
+
+        .bond-result {
+            padding: 15px;
+            border-radius: 14px;
+            background: rgba(255,255,255,.05);
+        }
+
+        .bond-result strong {
+            display: block;
+            font-size: 20px;
+            margin-top: 5px;
+        }
+
+        /* =========================
+           FUND DEMO
+        ========================== */
+
+        .fund-pie {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            margin: 25px auto;
+            background:
+                conic-gradient(
+                    #8ea1ff 0 35%,
+                    #b98aff 35% 60%,
+                    #7ed8bd 60% 80%,
+                    #f1c875 80% 100%
+                );
+            box-shadow: 0 0 50px rgba(120,140,255,.15);
+        }
+
+        .fund-legend {
+            display: grid;
+            gap: 10px;
+        }
+
+        .fund-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.05);
+        }
+
+        /* =========================
+           DCA DEMO
+        ========================== */
+
+        .dca-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .dca-table th,
+        .dca-table td {
+            padding: 13px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+        }
+
+        .dca-table th {
+            color: rgba(255,255,255,.45);
+            font-size: 13px;
+        }
+
+        .dca-total {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 16px;
+            background: rgba(255,255,255,.06);
+        }
+
+        .dca-total strong {
+            font-size: 28px;
+        }
+
+        /* =========================
+           QUIZ
+        ========================== */
+
+        .quiz-box {
+            margin-top: 35px;
+            padding: 30px;
+            border-radius: 22px;
+            background: rgba(255,255,255,.045);
+            border: 1px solid rgba(255,255,255,.09);
+        }
+
+        .quiz-question {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            padding: 14px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.1);
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255,255,255,.1);
+        }
+
+        .quiz-result {
+            margin-top: 18px;
+            font-weight: 700;
+            min-height: 25px;
+        }
+
+        /* =========================
+           LESSON END
+        ========================== */
+
+        .lesson-end {
+            margin-top: 40px;
+            padding: 30px;
+            border-radius: 22px;
+            text-align: center;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(100,120,255,.13),
+                    rgba(170,100,255,.10)
+                );
+            border: 1px solid rgba(255,255,255,.1);
+        }
+
+        .lesson-end p {
+            max-width: 600px;
+            margin: 10px auto 25px;
+        }
+
+        /* =========================
+           EXPLORE
+        ========================== */
+
+        .interactive-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .interactive-card {
+            padding: 30px;
+            border-radius: 25px;
+        }
+
+        .interactive-card p {
+            color: rgba(255,255,255,.55);
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: white;
+            cursor: pointer;
+        }
+
+        .range-value {
+            font-size: 42px;
+            font-weight: 800;
+            margin: 20px 0;
+        }
+
+        .growth-chart {
+            height: 220px;
+            margin-top: 20px;
+            border-left: 1px solid rgba(255,255,255,.12);
+            border-bottom: 1px solid rgba(255,255,255,.12);
+        }
+
+        .growth-line svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* =========================
+           SIMULATOR
+        ========================== */
+
+        .simulator {
+            padding: 30px;
+            border-radius: 28px;
+        }
+
+        .sim-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .cash {
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .sim-grid {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 15px;
+        }
+
+        .asset {
+            padding: 20px;
+            border-radius: 18px;
+            background: rgba(255,255,255,.045);
+            border: 1px solid rgba(255,255,255,.08);
+        }
+
+        .asset-name {
+            font-weight: 700;
+        }
+
+        .asset-price {
+            font-size: 22px;
+            font-weight: 800;
+            margin: 12px 0;
+        }
+
+        .asset button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .portfolio {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 18px;
+            background: rgba(255,255,255,.04);
+        }
+
+        /* =========================
+           APP
+        ========================== */
+
+        .app-section {
+            text-align: center;
+        }
+
+        .app-card {
+            padding: 70px 30px;
+            border-radius: 35px;
+        }
+
+        .app-card h2 {
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .app-card p {
+            max-width: 600px;
+            margin: auto;
+            color: rgba(255,255,255,.58);
+            line-height: 1.7;
+        }
+
+        .download-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .upload-area {
+            margin-top: 40px;
+            padding: 35px;
+            border: 1px dashed rgba(255,255,255,.25);
+            border-radius: 20px;
+            background: rgba(255,255,255,.03);
+        }
+
+        .upload-icon {
+            font-size: 35px;
+            margin-bottom: 12px;
+        }
+
+        .upload-area p {
+            margin-bottom: 15px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-name {
+            margin-top: 15px;
+            color: #aab7ff;
+            font-size: 14px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================== */
+
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid rgba(255,255,255,.08);
+            color: rgba(255,255,255,.4);
+            font-size: 13px;
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================== */
+
+        @media(max-width:850px) {
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-grid,
+            .interactive-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .lesson-grid,
+            .sim-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .market-demo,
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width:550px) {
+
+            section {
+                padding: 80px 0;
+            }
+
+            .lesson-grid,
+            .sim-grid,
+            .bond-results {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding-top: 120px;
+            }
+
+            .hero-card {
+                padding: 18px;
+            }
+
+            .fake-chart {
+                height: 200px;
+            }
+
+            .full-lesson {
+                padding: 22px;
+            }
+
+            .ownership-display {
+                height: 55px;
+            }
+
+            .dca-table {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="orb one"></div>
+<div class="orb two"></div>
+
+<!-- =========================
+     NAVIGATION
+========================= -->
+
+<nav class="navbar glass">
+
+    <div class="logo">
+        Super<span>Stox</span>
+    </div>
+
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#learn">Learn</a>
+        <a href="#explore">Explore</a>
+        <a href="#simulator">Simulator</a>
+        <a href="#app" class="nav-download">Get App</a>
+    </div>
+
+</nav>
+
+
+<!-- =========================
+     HERO
+========================= -->
+
+<section class="hero" id="home">
+
+    <div class="container hero-grid">
+
+        <div>
+
+            <div class="eyebrow">
+                FINANCE, SIMPLIFIED
+            </div>
+
+            <h1>
+                Investing doesn't have to feel like
+                <span class="gradient-text">
+                    another language.
+                </span>
+            </h1>
+
+            <p class="subtitle">
+                Learn how stocks, markets, risk, and investing actually work
+                through interactive lessons and experiments — without risking
+                real money.
+            </p>
+
+            <div class="buttons">
+
+                <a href="#learn" class="btn btn-primary">
+                    Start Learning →
+                </a>
+
+                <a href="#app" class="btn btn-secondary">
+                    Explore the App
+                </a>
+
+            </div>
+
+            <div class="stats">
+
+                <div class="stat glass">
+                    <div class="stat-number">01</div>
+                    <div class="stat-label">Start with the basics</div>
+                </div>
+
+                <div class="stat glass">
+                    <div class="stat-number">02</div>
+                    <div class="stat-label">Experiment safely</div>
+                </div>
+
+                <div class="stat glass">
+                    <div class="stat-number">03</div>
+                    <div class="stat-label">Build understanding</div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="hero-card glass">
+
+            <div class="chart-header">
+
+                <div>
+
+                    <div class="stock-name">
+                        Market Example
+                    </div>
+
+                    <div class="stock-price">
+                        $142.87
+                    </div>
+
+                    <div class="stock-change">
+                        +4.82% today
+                    </div>
+
+                </div>
+
+                <div>📈</div>
+
+            </div>
+
+            <div class="fake-chart">
+
+                <svg
+                    viewBox="0 0 500 260"
+                    preserveAspectRatio="none"
+                >
+
+                    <polyline
+                        points="0,220 40,200 80,210 120,170 160,185 200,130 240,145 280,110 320,120 360,70 400,90 440,50 500,30"
+                        fill="none"
+                        stroke="white"
+                        stroke-width="4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+
+                </svg>
+
+            </div>
+
+            <div class="chart-labels">
+                <span>9:30</span>
+                <span>12:00</span>
+                <span>3:00</span>
+                <span>4:00</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     LESSONS
+========================= -->
+
+<section id="learn">
+
+    <div class="container">
+
+        <div class="eyebrow">
+            LEARN
+        </div>
+
+        <h2>
+            Start from zero.
+        </h2>
+
+        <p class="section-intro">
+            No finance vocabulary required. Explore the concepts behind
+            investing one step at a time through interactive examples.
+            These lessons are a preview of what SuperStox can offer.
+        </p>
+
+
+        <div class="lesson-grid">
+
+            <div class="lesson glass">
+
+                <div class="lesson-number">
+                    LESSON 01
+                </div>
+
+                <h3>
+                    What is a stock?
+                </h3>
+
+                <p>
+                    Understand what it actually means to own a piece
+                    of a company.
+                </p>
+
+                <button
+                    class="btn btn-secondary lesson-button"
+                    onclick="openLesson(1)"
+                >
+                    Start Lesson →
+                </button>
+
+            </div>
+
+
+            <div class="lesson glass">
+
+                <div class="lesson-number">
+                    LESSON 02
+                </div>
+
+                <h3>
+                    How markets work
+                </h3>
+
+                <p>
+                    Learn why prices move and how buyers and sellers
+                    interact.
+                </p>
+
+                <button
+                    class="btn btn-secondary lesson-button"
+                    onclick="openLesson(2)"
+                >
+                    Start Lesson →
+                </button>
+
+            </div>
+
+
+            <div class="lesson glass">
+
+                <div class="lesson-number">
+                    LESSON 03
+                </div>
+
+                <h3>
+                    Investing vs. trading
+                </h3>
+
+                <p>
+                    Understand the difference between long-term investing
+                    and short-term trading.
+                </p>
+
+                <button
+                    class="btn btn-secondary lesson-button"
+                    onclick="openLesson(3)"
+                >
+                    Start Lesson →
+                </button>
+
+            </div>
+
+
+            <div class="lesson glass">
+
+                <div class="lesson-number">
+                    LESSON 04
+                </div>
+
+                <h3>
+                    Risk & reward
+                </h3>
+
+                <p>
+                    Learn why potential returns often come with uncertainty.
+                </p>
+
+                <button
+                    class="btn btn-secondary lesson-button"
+                    onclick="openLesson(4)"
+                >
+                    Start Lesson →
+                </button>
+
+            </div>
+
+
+            <div class="lesson glass">
+
+                <div class="lesson-number">
+                    LESSON 05
+                </div>
+
+                <h3>
+                    Diversification
+                </h3>
+
+                <p>
+                    Discover why spreading investments can matter.
+                </p>
+
+                <button
+                    class="btn btn-secondary lesson-button"
+                    onclick="openLesson(5)"
+                >
+                    Start Lesson →
+                </button>
+
+            </div>
+
+
+            <div class="lesson glass">
+
+                <div class="lesson-number">
+                    LESSON 06
+                </div>
+
+                <h3>
+                    Compound growth
+                </h3>
+
+                <p>
+                    See how money can potentially grow over long periods.
+                </p>
+
+                <button
+                    class="btn btn-secondary lesson-button"
+                    onclick="openLesson(6)"
+                >
+                    Start Lesson →
+                </button>
+
+            </div>
+
+
+            <div class="lesson glass">
+
+                <div class="lesson-number">
+                    LESSON 07
+                </div>
+
+                <h3>
+                    Bonds & Fixed Income
+                </h3>
+
+                <p>
+                    Learn how bonds work and why governments and companies
+                    borrow money from investors.
+                </p>
+
+                <button
+                    class="btn btn-secondary lesson-button"
+                    onclick="openLesson(7)"
+                >
+                    Start Lesson →
+                </button>
+
+            </div>
+
+
+            <div class="lesson glass">
+
+                <div class="lesson-number">
+                    LESSON 08
+                </div>
+
+                <h3>
+                    ETFs & Mutual Funds
+                </h3>
+
+                <p>
+                    Discover how funds can give investors exposure to many
+                    investments in one vehicle.
+                </p>
+
+                <button
+                    class="btn btn-secondary lesson-button"
+                    onclick="openLesson(8)"
+                >
+                    Start Lesson →
+                </button>
+
+            </div>
+
+
+            <div class="lesson glass">
+
+                <div class="lesson-number">
+                    LESSON 09
+                </div>
+
+                <h3>
+                    Dollar-Cost Averaging
+                </h3>
+
+                <p>
+                    Learn how investing a consistent amount over time can
+                    change the number of shares you purchase.
+                </p>
+
+                <button
+                    class="btn btn-secondary lesson-button"
+                    onclick="openLesson(9)"
+                >
+                    Start Lesson →
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             FULL LESSON
+        ========================== -->
+
+        <div id="lessonArea">
+
+            <div class="full-lesson glass">
+
+                <div class="lesson-header">
+
+                    <div
+                        class="eyebrow"
+                        id="lessonEyebrow"
+                    >
+                        LESSON 01
+                    </div>
+
+                    <h2 id="lessonTitle">
+                        What is a stock?
+                    </h2>
+
+                    <p
+                        id="lessonSubtitle"
+                        style="color:rgba(255,255,255,.5);"
+                    ></p>
+
+                </div>
+
+                <div
+                    class="lesson-content"
+                    id="lessonContent"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     EXPLORE
+========================= -->
+
+<section id="explore">
+
+    <div class="container">
+
+        <div class="eyebrow">
+            INTERACTIVE LAB
+        </div>
+
+        <h2>
+            Don't just read it.
+        </h2>
+
+        <p class="section-intro">
+            Move the controls. Change the variables. See what happens.
+            Understanding money becomes much easier when you can experiment.
+        </p>
+
+
+        <div class="interactive-grid">
+
+
+            <div class="interactive-card glass">
+
+                <h3>
+                    📈 Compound Growth
+                </h3>
+
+                <p>
+                    See how changing the amount of time affects a hypothetical
+                    growth example.
+                </p>
+
+                <label>
+                    Years:
+                </label>
+
+                <input
+                    type="range"
+                    id="years"
+                    min="1"
+                    max="40"
+                    value="10"
+                >
+
+                <div class="range-value">
+
+                    <span id="yearsValue">
+                        10
+                    </span>
+
+                    years
+
+                </div>
+
+                <div>
+
+                    Hypothetical value:
+
+                    <strong id="growthValue">
+                        $1,629
+                    </strong>
+
+                </div>
+
+                <div class="growth-chart">
+
+                    <div class="growth-line">
+
+                        <svg
+                            viewBox="0 0 500 220"
+                            preserveAspectRatio="none"
+                        >
+
+                            <polyline
+                                id="growthPath"
+                                points=""
+                                fill="none"
+                                stroke="white"
+                                stroke-width="4"
+                            />
+
+                        </svg>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="interactive-card glass">
+
+                <h3>
+                    ⚖️ Risk & Reward
+                </h3>
+
+                <p>
+                    Higher potential returns don't come without uncertainty.
+                    Move the slider to explore a simplified example.
+                </p>
+
+                <label>
+                    Potential return:
+                </label>
+
+                <input
+                    type="range"
+                    id="riskSlider"
+                    min="1"
+                    max="10"
+                    value="5"
+                >
+
+                <div class="range-value">
+
+                    <span id="riskValue">
+                        5
+                    </span>/10
+
+                </div>
+
+                <h3 id="riskTitle">
+                    Moderate Risk
+                </h3>
+
+                <p id="riskDescription">
+                    This represents a middle-ground example.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     SIMULATOR
+========================= -->
+
+<section id="simulator">
+
+    <div class="container">
+
+        <div class="eyebrow">
+            PRACTICE
+        </div>
+
+        <h2>
+            Practice without the pressure.
+        </h2>
+
+        <p class="section-intro">
+            Use hypothetical money to explore buying and selling.
+            Nothing here uses real money.
+        </p>
+
+
+        <div class="simulator glass">
+
+            <div class="sim-top">
+
+                <div>
+
+                    <div style="color:rgba(255,255,255,.5);">
+                        Virtual cash
+                    </div>
+
+                    <div
+                        class="cash"
+                        id="cash"
+                    >
+                        $10,000
+                    </div>
+
+                </div>
+
+                <div>
+                    🧪 Practice Mode
+                </div>
+
+            </div>
+
+
+            <div class="sim-grid">
+
+                <div class="asset">
+
+                    <div class="asset-name">
+                        Company A
+                    </div>
+
+                    <div class="asset-price">
+                        $150
+                    </div>
+
+                    <button onclick="buyStock('A')">
+                        Buy $150
+                    </button>
+
+                </div>
+
+
+                <div class="asset">
+
+                    <div class="asset-name">
+                        Company B
+                    </div>
+
+                    <div class="asset-price">
+                        $85
+                    </div>
+
+                    <button onclick="buyStock('B')">
+                        Buy $85
+                    </button>
+
+                </div>
+
+
+                <div class="asset">
+
+                    <div class="asset-name">
+                        Company C
+                    </div>
+
+                    <div class="asset-price">
+                        $220
+                    </div>
+
+                    <button onclick="buyStock('C')">
+                        Buy $220
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="portfolio">
+
+                <h3>
+                    Your Practice Portfolio
+                </h3>
+
+                <p id="portfolioText">
+                    You haven't purchased anything yet.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     APP
+========================= -->
+
+<section
+    id="app"
+    class="app-section"
+>
+
+    <div class="container">
+
+        <div class="app-card glass">
+
+            <div class="eyebrow">
+                TAKE IT WITH YOU
+            </div>
+
+            <h2>
+                Your investing journey doesn't end here.
+            </h2>
+
+            <p>
+                These lessons are only the beginning. Take your knowledge
+                further with the full SuperStox app, where you can continue
+                learning, exploring markets, and practicing with virtual money.
+            </p>
+
+
+            <div class="download-buttons">
+
+                <a
+                    href="#"
+                    class="btn btn-primary"
+                >
+                    📱 Download for Mobile
+                </a>
+
+                <a
+                    href="#"
+                    class="btn btn-secondary"
+                >
+                    💻 Download for Desktop
+                </a>
+
+            </div>
+
+
+            <div class="upload-area">
+
+                <div class="upload-icon">
+                    📦
+                </div>
+
+                <h3>
+                    Have an app file?
+                </h3>
+
+                <p>
+                    Choose your app file to attach it to this page.
+                </p>
+
+                <label
+                    for="fileInput"
+                    class="btn btn-secondary"
+                >
+                    Choose File
+                </label>
+
+                <input
+                    type="file"
+                    id="fileInput"
+                    accept=".apk,.exe,.dmg,.zip"
+                >
+
+                <div
+                    class="file-name"
+                    id="fileName"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <div class="container footer-inner">
+
+        <div>
+            © 2026 SuperStox
+        </div>
+
+        <div>
+            Learn • Explore • Practice
+        </div>
+
+    </div>
+
+</footer>
+
+
+<script>
+
+/* =========================================================
+   LESSON DATA
+========================================================= */
+
+const lessons = {
+
+1: {
+
+number: "LESSON 01",
+
+title: "What is a stock?",
+
+subtitle:
+"Let's start with the most basic building block of the stock market.",
+
+content: `
+
+<p>
+Imagine that you start a company.
+Your company becomes worth <strong>$100,000</strong>.
+Instead of keeping the entire company to yourself,
+you could divide it into smaller pieces.
+</p>
+
+<p>
+Those pieces are called <strong>shares</strong>.
+If you divide the company into 100 equal shares,
+each share represents 1% of the company.
+</p>
+
+<div class="lesson-example">
+
+<h3>🧩 Let's visualize it</h3>
+
+<p>
+Imagine this represents an entire company.
+Each section is one share.
+</p>
+
+<div
+class="ownership-display"
+id="ownershipDisplay"
+></div>
+
+<label>
+How many shares do you own?
+</label>
+
+<input
+class="lesson-slider"
+type="range"
+id="ownershipSlider"
+min="1"
+max="100"
+value="10"
+>
+
+<div class="ownership-result">
+You own
+<span id="ownershipValue">10%</span>
+</div>
+
+</div>
+
+<p>
+If a company has 100 total shares and you own
+10 of them, you own <strong>10% of that company</strong>.
+</p>
+
+<p>
+Public companies can have millions or even billions
+of shares. Investors can purchase some of those shares
+and therefore own a small portion of the company.
+</p>
+
+${quiz(
+"A company has 1,000 total shares. You own 100. What percentage do you own?",
+["5%","10%","25%","50%"],
+1
+)}
+
+${lessonEnd()}
+
+`
+},
+
+
+2: {
+
+number: "LESSON 02",
+
+title: "How do markets work?",
+
+subtitle:
+"Learn why stock prices move and what buyers and sellers have to do with it.",
+
+content: `
+
+<p>
+At a basic level, markets bring together people who want
+to buy and people who want to sell.
+</p>
+
+<p>
+The interaction between buyers and sellers helps determine
+the prices at which trades happen.
+</p>
+
+<div class="lesson-example">
+
+<h3>⚖️ Supply & Demand</h3>
+
+<p>
+What happens when lots of people suddenly want to buy
+the same stock?
+</p>
+
+<div class="market-demo">
+
+<div class="market-side">
+
+<div>Buyers</div>
+
+<div
+class="market-number"
+id="buyerNumber"
+>
+50
+</div>
+
+<button
+class="btn btn-secondary"
+onclick="changeMarket('buyers')"
+>
+More Buyers
+</button>
+
+</div>
+
+
+<div class="market-side">
+
+<div>Sellers</div>
+
+<div
+class="market-number"
+id="sellerNumber"
+>
+50
+</div>
+
+<button
+class="btn btn-secondary"
+onclick="changeMarket('sellers')"
+>
+More Sellers
+</button>
+
+</div>
+
+</div>
+
+<div
+class="market-message"
+id="marketMessage"
+>
+The market is relatively balanced.
+</div>
+
+</div>
+
+<p>
+If demand increases while available supply doesn't change
+much, buyers may be willing to pay more.
+</p>
+
+<p>
+If many people want to sell and fewer people want to buy,
+the price can move downward.
+</p>
+
+${quiz(
+"If many more people suddenly want to buy a stock, what could happen to its price?",
+["It can rise","It must become $0","Nothing can change","The company disappears"],
+0
+)}
+
+${lessonEnd()}
+
+`
+},
+
+
+3: {
+
+number: "LESSON 03",
+
+title: "Investing vs. trading",
+
+subtitle:
+"These words are often used interchangeably, but they describe different approaches.",
+
+content: `
+
+<p>
+<strong>Investing</strong> and <strong>trading</strong>
+both involve buying and selling financial assets, but
+the goals and time horizons can be very different.
+</p>
+
+<div class="lesson-example">
+
+<h3>🕐 Two different approaches</h3>
+
+<div class="comparison">
+
+<div class="comparison-box">
+
+<h3>📈 Investing</h3>
+
+<p>
+Generally focuses on the longer term.
+</p>
+
+<ul>
+<li>Longer time horizon</li>
+<li>Focus on businesses or assets</li>
+<li>Often less frequent buying and selling</li>
+<li>Can involve patience through market changes</li>
+</ul>
+
+</div>
+
+
+<div class="comparison-box">
+
+<h3>⚡ Trading</h3>
+
+<p>
+Generally focuses on shorter-term price movements.
+</p>
+
+<ul>
+<li>Shorter time horizon</li>
+<li>More frequent transactions</li>
+<li>Focus on price movements</li>
+<li>Can involve significant uncertainty</li>
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+<p>
+Neither approach guarantees making money.
+Both involve risk.
+</p>
+
+<div class="lesson-example">
+
+<h3>🧠 Think about it</h3>
+
+<p>
+Imagine a stock falls 10% in one day.
+A long-term investor and a short-term trader might
+react very differently.
+</p>
+
+<button
+class="btn btn-secondary"
+onclick="showTradingExample()"
+>
+Show Example
+</button>
+
+<div
+class="market-message"
+id="tradingExample"
+style="display:none;"
+></div>
+
+</div>
+
+${quiz(
+"Which generally describes a longer time horizon?",
+["Long-term investing","Short-term trading","Neither","They are always identical"],
+0
+)}
+
+${lessonEnd()}
+
+`
+},
+
+
+4: {
+
+number: "LESSON 04",
+
+title: "Risk & reward",
+
+subtitle:
+"Understanding risk is one of the most important parts of understanding investing.",
+
+content: `
+
+<p>
+Every investment involves some level of uncertainty.
+An investment can potentially gain value, but it can also
+lose value.
+</p>
+
+<p>
+Investments with greater potential returns can also involve
+greater uncertainty and larger price movements.
+</p>
+
+<div class="lesson-example">
+
+<h3>⚖️ Explore the idea of risk</h3>
+
+<p>
+Move the slider to see a simplified risk spectrum.
+</p>
+
+<input
+type="range"
+id="lessonRiskSlider"
+min="1"
+max="100"
+value="50"
+oninput="updateLessonRisk()"
+>
+
+<div class="risk-bar">
+
+<div
+class="risk-fill"
+id="lessonRiskFill"
+></div>
+
+</div>
+
+<div class="risk-labels">
+
+<span>Lower uncertainty</span>
+
+<span id="lessonRiskText">
+Moderate
+</span>
+
+<span>Higher uncertainty</span>
+
+</div>
+
+</div>
+
+<p>
+Risk can include price volatility, the possibility of losing
+your original investment, inflation, and other uncertainties.
+</p>
+
+${quiz(
+"What does investment risk generally describe?",
+[
+"The certainty of making money",
+"The uncertainty surrounding possible outcomes",
+"A guaranteed loss",
+"A company's employee count"
+],
+1
+)}
+
+${lessonEnd()}
+
+`
+},
+
+
+5: {
+
+number: "LESSON 05",
+
+title: "Diversification",
+
+subtitle:
+"Learn why putting everything into one investment can create concentration risk.",
+
+content: `
+
+<p>
+Imagine you have $10,000 and put the entire amount into
+one company.
+</p>
+
+<p>
+If that company performs poorly, a very large portion of
+your portfolio could be affected.
+</p>
+
+<p>
+<strong>Diversification</strong> means spreading your
+investments across different assets or investments instead
+of relying entirely on one.
+</p>
+
+<div class="lesson-example">
+
+<h3>🥚 Don't put everything in one basket</h3>
+
+<div class="portfolio-row">
+
+<div class="portfolio-label">
+<span>Company A</span>
+<span id="companyAPercent">100%</span>
+</div>
+
+<div class="portfolio-bar">
+
+<div
+class="portfolio-fill"
+id="companyAFill"
+style="width:100%;"
+></div>
+
+</div>
+
+</div>
+
+
+<div class="portfolio-row">
+
+<div class="portfolio-label">
+<span>Company B</span>
+<span id="companyBPercent">0%</span>
+</div>
+
+<div class="portfolio-bar">
+
+<div
+class="portfolio-fill"
+id="companyBFill"
+style="width:0%;"
+></div>
+
+</div>
+
+</div>
+
+
+<div class="portfolio-row">
+
+<div class="portfolio-label">
+<span>Company C</span>
+<span id="companyCPercent">0%</span>
+</div>
+
+<div class="portfolio-bar">
+
+<div
+class="portfolio-fill"
+id="companyCFill"
+style="width:0%;"
+></div>
+
+</div>
+
+</div>
+
+
+<div class="buttons">
+
+<button
+class="btn btn-secondary"
+onclick="setPortfolio('concentrated')"
+>
+Concentrated
+</button>
+
+<button
+class="btn btn-secondary"
+onclick="setPortfolio('diversified')"
+>
+Diversified
+</button>
+
+</div>
+
+</div>
+
+<p>
+Diversification doesn't guarantee that you won't lose money.
+It is mainly about avoiding having too much of your portfolio
+dependent on one investment.
+</p>
+
+${quiz(
+"What is one reason people use diversification?",
+[
+"To guarantee profits",
+"To eliminate all risk",
+"To reduce concentration in one investment",
+"To guarantee a stock rises"
+],
+2
+)}
+
+${lessonEnd()}
+
+`
+},
+
+
+6: {
+
+number: "LESSON 06",
+
+title: "Compound growth",
+
+subtitle:
+"See why time can be an important factor when thinking about long-term growth.",
+
+content: `
+
+<p>
+Compound growth is the idea that growth can build on previous
+growth over time.
+</p>
+
+<p>
+Imagine you start with <strong>$1,000</strong> and it
+hypothetically grows by 5% per year.
+</p>
+
+<p>
+After the first year, the hypothetical value would be
+$1,050. In the next year, the example applies 5% to the
+new amount.
+</p>
+
+<div class="lesson-example">
+
+<h3>📈 Change the time</h3>
+
+<input
+type="range"
+id="lessonYears"
+min="1"
+max="40"
+value="10"
+oninput="updateLessonGrowth()"
+>
+
+<div class="range-value">
+
+<span id="lessonYearsValue">
+10
+</span>
+
+years
+
+</div>
+
+<div>
+Hypothetical value:
+<strong id="lessonGrowthValue">
+$1,629
+</strong>
+</div>
+
+<div class="growth-chart">
+
+<svg
+viewBox="0 0 500 200"
+preserveAspectRatio="none"
+>
+
+<polyline
+id="lessonGrowthPath"
+points=""
+fill="none"
+stroke="white"
+stroke-width="4"
+/>
+
+</svg>
+
+</div>
+
+</div>
+
+<p>
+This example assumes a constant 5% annual growth rate purely
+to demonstrate the mathematics. Real investments do not grow
+at a guaranteed constant rate.
+</p>
+
+${quiz(
+"What is the basic idea behind compound growth?",
+[
+"Growth can build on previous growth",
+"Money can never lose value",
+"Every investment grows at exactly 5%",
+"Investing guarantees profit"
+],
+0
+)}
+
+${lessonEnd()}
+
+`
+},
+
+
+7: {
+
+number: "LESSON 07",
+
+title: "Bonds & Fixed Income",
+
+subtitle:
+"Learn how bonds work and why governments and companies borrow money from investors.",
+
+content: `
+
+<p>
+So far we've mostly talked about owning part of a company.
+But there's another major way people can invest:
+<strong>lending money</strong>.
+</p>
+
+<p>
+A <strong>bond</strong> is essentially a loan from an investor
+to a borrower such as a government, municipality, or company.
+In return, the borrower typically agrees to pay interest and
+return the principal at a specified maturity date.
+</p>
+
+<div class="lesson-example">
+
+<h3>🏦 A Simple Bond Example</h3>
+
+<p>
+Imagine you buy a hypothetical <strong>$1,000 bond</strong>
+with a 5% annual interest rate and a 5-year maturity.
+</p>
+
+<div class="bond-card">
+
+<div>
+Initial investment
+</div>
+
+<div class="bond-amount">
+$1,000
+</div>
+
+<div class="bond-timeline">
+
+<div class="timeline-point"></div>
+<div class="timeline-line"></div>
+<div class="timeline-point"></div>
+<div class="timeline-line"></div>
+<div class="timeline-point"></div>
+
+</div>
+
+<div class="bond-results">
+
+<div class="bond-result">
+Annual interest
+<strong>$50</strong>
+</div>
+
+<div class="bond-result">
+Example term
+<strong>5 years</strong>
+</div>
+
+<div class="bond-result">
+Principal
+<strong>$1,000</strong>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<p>
+The $50 figure comes from the simplified calculation:
+$1,000 × 5% = $50 per year.
+Actual bonds can have different structures, prices,
+interest payments, and risks.
+</p>
+
+<p>
+The key idea is that a bond is different from a stock:
+with a stock, you generally own a portion of a company.
+With a bond, you're generally lending money to the issuer.
+</p>
+
+<p>
+Bonds still involve risk. The issuer may have difficulty
+making payments, and bond prices can change before maturity.
+</p>
+
+${quiz(
+"What is a bond most similar to?",
+[
+"Owning a piece of a company",
+"Lending money to an issuer",
+"A guaranteed stock",
+"A savings account with no uncertainty"
+],
+1
+)}
+
+${lessonEnd()}
+
+`
+},
+
+
+8: {
+
+number: "LESSON 08",
+
+title: "ETFs & Mutual Funds",
+
+subtitle:
+"Discover how funds can give investors exposure to many investments in one vehicle.",
+
+content: `
+
+<p>
+Buying individual stocks isn't the only way to invest.
+An <strong>ETF</strong> or <strong>mutual fund</strong> can
+hold many different investments inside one fund.
+</p>
+
+<p>
+Instead of buying 100 different stocks individually, an investor
+could buy shares of a fund that itself owns a collection of
+investments.
+</p>
+
+<div class="lesson-example">
+
+<h3>🧺 One Fund, Many Investments</h3>
+
+<p>
+Here's a simplified example of what a hypothetical diversified
+fund could contain.
+</p>
+
+<div class="fund-pie"></div>
+
+<div class="fund-legend">
+
+<div class="fund-row">
+<span>Large companies</span>
+<strong>35%</strong>
+</div>
+
+<div class="fund-row">
+<span>International companies</span>
+<strong>25%</strong>
+</div>
+
+<div class="fund-row">
+<span>Bonds</span>
+<strong>20%</strong>
+</div>
+
+<div class="fund-row">
+<span>Other assets</span>
+<strong>20%</strong>
+</div>
+
+</div>
+
+</div>
+
+<p>
+An <strong>ETF</strong>, or exchange-traded fund, trades on an
+exchange during the trading day, similar to how stocks trade.
+</p>
+
+<p>
+A <strong>mutual fund</strong> also pools money from many investors
+and invests according to the fund's strategy, but mutual funds have
+different trading and pricing mechanics.
+</p>
+
+<p>
+Both can provide diversification, but not every ETF or mutual fund
+is automatically diversified or low-risk. The fund's holdings and
+strategy matter.
+</p>
+
+${quiz(
+"What is one thing an ETF or mutual fund can do?",
+[
+"Guarantee a profit",
+"Hold a collection of investments",
+"Eliminate every type of risk",
+"Guarantee that stocks rise"
+],
+1
+)}
+
+${lessonEnd()}
+
+`
+},
+
+
+9: {
+
+number: "LESSON 09",
+
+title: "Dollar-Cost Averaging",
+
+subtitle:
+"Learn how investing a consistent amount over time can change the number of shares you purchase.",
+
+content: `
+
+<p>
+Dollar-cost averaging, often called <strong>DCA</strong>,
+is a strategy where someone invests a consistent amount of money
+at regular intervals rather than investing the entire amount
+at once.
+</p>
+
+<p>
+Because prices can change, the same amount of money can purchase
+different numbers of shares at different times.
+</p>
+
+<div class="lesson-example">
+
+<h3>📅 See it in action</h3>
+
+<p>
+Imagine investing <strong>$100 each month</strong>.
+Watch how the number of shares changes as the hypothetical
+price changes.
+</p>
+
+<table class="dca-table">
+
+<thead>
+
+<tr>
+<th>Month</th>
+<th>Price</th>
+<th>Investment</th>
+<th>Shares Bought</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+<td>January</td>
+<td>$20</td>
+<td>$100</td>
+<td>5.00</td>
+</tr>
+
+<tr>
+<td>February</td>
+<td>$25</td>
+<td>$100</td>
+<td>4.00</td>
+</tr>
+
+<tr>
+<td>March</td>
+<td>$10</td>
+<td>$100</td>
+<td>10.00</td>
+</tr>
+
+<tr>
+<td>April</td>
+<td>$20</td>
+<td>$100</td>
+<td>5.00</td>
+</tr>
+
+</tbody>
+
+</table>
+
+<div class="dca-total">
+
+Total invested:
+
+<strong>
+$400
+</strong>
+
+<br><br>
+
+Total hypothetical shares:
+
+<strong>
+24
+</strong>
+
+</div>
+
+</div>
+
+<p>
+Notice what happened in March. Because the hypothetical price
+was lower, the same $100 purchased more shares.
+When the price was higher, the same $100 purchased fewer shares.
+</p>
+
+<p>
+DCA does <strong>not</strong> guarantee profits or protect against
+losses. It is simply a way of spreading purchases over time rather
+than trying to choose one perfect moment to invest.
+</p>
+
+<p>
+This can also reduce the pressure of trying to predict exactly
+when the market will rise or fall.
+</p>
+
+${quiz(
+"What happens when you invest the same amount while the price is lower?",
+[
+"You generally purchase more shares",
+"You always purchase fewer shares",
+"The number of shares cannot change",
+"The investment becomes risk-free"
+],
+0
+)}
+
+${lessonEnd()}
+
+`
+
+}
+
+};
+
+
+/* =========================================================
+   QUIZ GENERATOR
+========================================================= */
+
+function quiz(question,options,correctIndex) {
+
+let buttons = "";
+
+options.forEach((option,index) => {
+
+buttons += `
+
+<button
+class="quiz-option"
+onclick="checkLessonAnswer(${correctIndex},${index})"
+>
+${option}
+</button>
+
+`;
+
+});
+
+return `
+
+<div class="quiz-box">
+
+<div class="quiz-question">
+🧠 Quick Check
+<br><br>
+${question}
+</div>
+
+<div class="quiz-options">
+${buttons}
+</div>
+
+<div
+class="quiz-result"
+id="quizResult"
+></div>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================================
+   LESSON END
+========================================================= */
+
+function lessonEnd() {
+
+return `
+
+<div class="lesson-end">
+
+<div class="eyebrow">
+LESSON COMPLETE
+</div>
+
+<h3>
+You just took another step toward understanding investing.
+</h3>
+
+<p>
+This is only a preview of what SuperStox can teach you.
+If you want to continue learning about investing, markets,
+and how everything connects, download the SuperStox app
+and let's start your journey.
+</p>
+
+<a
+href="#app"
+class="btn btn-primary"
+>
+Continue with SuperStox →
+</a>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================================
+   OPEN LESSON
+========================================================= */
+
+function openLesson(number) {
+
+const lesson = lessons[number];
+
+document.getElementById("lessonEyebrow")
+.textContent = lesson.number;
+
+document.getElementById("lessonTitle")
+.textContent = lesson.title;
+
+document.getElementById("lessonSubtitle")
+.textContent = lesson.subtitle;
+
+document.getElementById("lessonContent")
+.innerHTML = lesson.content;
+
+document.getElementById("lessonArea")
+.style.display = "block";
+
+
+setTimeout(() => {
+
+document.getElementById("lessonArea")
+.scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+
+},50);
+
+
+if(number === 1) {
+
+setTimeout(() => {
+
+createOwnershipPieces();
+updateOwnership();
+
+},100);
+
+}
+
+
+if(number === 6) {
+
+setTimeout(() => {
+
+updateLessonGrowth();
+
+},100);
+
+}
+
+}
+
+
+/* =========================================================
+   QUIZ
+========================================================= */
+
+function checkLessonAnswer(
+correctIndex,
+selectedIndex
+) {
+
+const result =
+document.getElementById("quizResult");
+
+
+if(selectedIndex === correctIndex) {
+
+result.textContent =
+"✅ Correct! Nice work.";
+
+}
+
+else {
+
+result.textContent =
+"❌ Not quite. Think about the concept and try again.";
+
+}
+
+}
+
+
+/* =========================================================
+   LESSON 1
+========================================================= */
+
+function createOwnershipPieces() {
+
+const display =
+document.getElementById(
+"ownershipDisplay"
+);
+
+if(!display) return;
+
+display.innerHTML = "";
+
+for(let i=0;i<100;i++) {
+
+const piece =
+document.createElement("div");
+
+piece.className =
+"ownership-piece";
+
+display.appendChild(piece);
+
+}
+
+}
+
+
+function updateOwnership() {
+
+const slider =
+document.getElementById(
+"ownershipSlider"
+);
+
+const value =
+document.getElementById(
+"ownershipValue"
+);
+
+if(!slider || !value) return;
+
+const amount =
+Number(slider.value);
+
+value.textContent =
+amount + "%";
+
+const pieces =
+document.querySelectorAll(
+".ownership-piece"
+);
+
+pieces.forEach((piece,index) => {
+
+if(index < amount) {
+
+piece.classList.add("owned");
+
+}
+
+else {
+
+piece.classList.remove("owned");
+
+}
+
+});
+
+}
+
+
+document.addEventListener(
+"input",
+function(event) {
+
+if(event.target.id === "ownershipSlider") {
+
+updateOwnership();
+
+}
+
+}
+);
+
+
+/* =========================================================
+   LESSON 2
+========================================================= */
+
+let buyers = 50;
+let sellers = 50;
+
+
+function changeMarket(type) {
+
+if(type === "buyers") {
+
+buyers += 10;
+
+}
+
+else {
+
+sellers += 10;
+
+}
+
+const buyerElement =
+document.getElementById(
+"buyerNumber"
+);
+
+const sellerElement =
+document.getElementById(
+"sellerNumber"
+);
+
+if(!buyerElement || !sellerElement)
+return;
+
+buyerElement.textContent =
+buyers;
+
+sellerElement.textContent =
+sellers;
+
+const message =
+document.getElementById(
+"marketMessage"
+);
+
+if(buyers > sellers) {
+
+message.textContent =
+"More buying pressure could push the price upward.";
+
+}
+
+else if(sellers > buyers) {
+
+message.textContent =
+"More selling pressure could push the price downward.";
+
+}
+
+else {
+
+message.textContent =
+"The market is relatively balanced.";
+
+}
+
+}
+
+
+/* =========================================================
+   LESSON 3
+========================================================= */
+
+function showTradingExample() {
+
+const box =
+document.getElementById(
+"tradingExample"
+);
+
+box.style.display = "block";
+
+box.textContent =
+"A long-term investor may focus on whether the underlying company still fits their goals. A short-term trader may be much more focused on the immediate price movement. Neither response guarantees a good outcome.";
+
+}
+
+
+/* =========================================================
+   LESSON 4
+========================================================= */
+
+function updateLessonRisk() {
+
+const slider =
+document.getElementById(
+"lessonRiskSlider"
+);
+
+const fill =
+document.getElementById(
+"lessonRiskFill"
+);
+
+const text =
+document.getElementById(
+"lessonRiskText"
+);
+
+if(!slider || !fill || !text)
+return;
+
+const value =
+Number(slider.value);
+
+fill.style.width =
+value + "%";
+
+if(value < 35) {
+
+text.textContent =
+"Lower";
+
+}
+
+else if(value < 70) {
+
+text.textContent =
+"Moderate";
+
+}
+
+else {
+
+text.textContent =
+"Higher";
+
+}
+
+}
+
+
+/* =========================================================
+   LESSON 5
+========================================================= */
+
+function setPortfolio(type) {
+
+let A;
+let B;
+let C;
+
+if(type === "concentrated") {
+
+A = 100;
+B = 0;
+C = 0;
+
+}
+
+else {
+
+A = 40;
+B = 35;
+C = 25;
+
+}
+
+document.getElementById(
+"companyAPercent"
+).textContent =
+A + "%";
+
+document.getElementById(
+"companyBPercent"
+).textContent =
+B + "%";
+
+document.getElementById(
+"companyCPercent"
+).textContent =
+C + "%";
+
+document.getElementById(
+"companyAFill"
+).style.width =
+A + "%";
+
+document.getElementById(
+"companyBFill"
+).style.width =
+B + "%";
+
+document.getElementById(
+"companyCFill"
+).style.width =
+C + "%";
+
+}
+
+
+/* =========================================================
+   LESSON 6
+========================================================= */
+
+function updateLessonGrowth() {
+
+const slider =
+document.getElementById(
+"lessonYears"
+);
+
+const yearsValue =
+document.getElementById(
+"lessonYearsValue"
+);
+
+const growthValue =
+document.getElementById(
+"lessonGrowthValue"
+);
+
+const path =
+document.getElementById(
+"lessonGrowthPath"
+);
+
+if(!slider || !yearsValue ||
+!growthValue || !path)
+return;
+
+const years =
+Number(slider.value);
+
+const startingMoney = 1000;
+const rate = .05;
+
+const finalValue =
+startingMoney *
+Math.pow(1+rate,years);
+
+yearsValue.textContent =
+years;
+
+growthValue.textContent =
+"$" +
+Math.round(finalValue)
+.toLocaleString();
+
+let points = "";
+
+for(let i=0;i<=years;i++) {
+
+const value =
+startingMoney *
+Math.pow(1+rate,i);
+
+const x =
+(i/years)*500;
+
+const normalized =
+(value-startingMoney) /
+(finalValue-startingMoney || 1);
+
+const y =
+190-normalized*165;
+
+points +=
+`${x},${y} `;
+
+}
+
+path.setAttribute(
+"points",
+points
+);
+
+}
+
+
+/* =========================================================
+   GENERAL EXPLORE
+========================================================= */
+
+const yearsSlider =
+document.getElementById("years");
+
+const yearsValue =
+document.getElementById("yearsValue");
+
+const growthValue =
+document.getElementById("growthValue");
+
+const growthPath =
+document.getElementById("growthPath");
+
+
+function updateGrowth() {
+
+const years =
+Number(yearsSlider.value);
+
+yearsValue.textContent =
+years;
+
+const startingMoney = 1000;
+const rate = .05;
+
+const finalValue =
+startingMoney *
+Math.pow(1+rate,years);
+
+growthValue.textContent =
+"$" +
+Math.round(finalValue)
+.toLocaleString();
+
+let points = "";
+
+for(let i=0;i<=years;i++) {
+
+const value =
+startingMoney *
+Math.pow(1+rate,i);
+
+const x =
+(i/years)*500;
+
+const normalized =
+(value-startingMoney) /
+(finalValue-startingMoney || 1);
+
+const y =
+205-normalized*180;
+
+points +=
+`${x},${y} `;
+
+}
+
+growthPath.setAttribute(
+"points",
+points
+);
+
+}
+
+
+yearsSlider.addEventListener(
+"input",
+updateGrowth
+);
+
+updateGrowth();
+
+
+/* =========================================================
+   GENERAL RISK
+========================================================= */
+
+const riskSlider =
+document.getElementById(
+"riskSlider"
+);
+
+const riskValue =
+document.getElementById(
+"riskValue"
+);
+
+const riskTitle =
+document.getElementById(
+"riskTitle"
+);
+
+const riskDescription =
+document.getElementById(
+"riskDescription"
+);
+
+
+function updateRisk() {
+
+const value =
+Number(riskSlider.value);
+
+riskValue.textContent =
+value;
+
+if(value <= 3) {
+
+riskTitle.textContent =
+"Lower Risk Example";
+
+riskDescription.textContent =
+"Lower-risk investments may have less price volatility, but lower risk does not mean no risk.";
+
+}
+
+else if(value <= 7) {
+
+riskTitle.textContent =
+"Moderate Risk";
+
+riskDescription.textContent =
+"This represents a middle-ground example. Real investments involve uncertainty and can lose value.";
+
+}
+
+else {
+
+riskTitle.textContent =
+"Higher Risk Example";
+
+riskDescription.textContent =
+"Higher potential returns can come with larger price swings and a greater possibility of loss.";
+
+}
+
+}
+
+
+riskSlider.addEventListener(
+"input",
+updateRisk
+);
+
+updateRisk();
+
+
+/* =========================================================
+   SIMULATOR
+========================================================= */
+
+let cash = 10000;
+
+let portfolio = {
+A:0,
+B:0,
+C:0
+};
+
+const prices = {
+A:150,
+B:85,
+C:220
+};
+
+
+function buyStock(stock) {
+
+const price =
+prices[stock];
+
+if(cash < price) {
+
+alert(
+"You don't have enough virtual cash."
+);
+
+return;
+
+}
+
+cash -= price;
+
+portfolio[stock]++;
+
+document.getElementById(
+"cash"
+).textContent =
+"$" +
+cash.toLocaleString();
+
+document.getElementById(
+"portfolioText"
+).innerHTML =
+
+`
+Company A: ${portfolio.A} shares<br>
+Company B: ${portfolio.B} shares<br>
+Company C: ${portfolio.C} shares
+`;
+
+}
+
+
+/* =========================================================
+   FILE UPLOAD
+========================================================= */
+
+const fileInput =
+document.getElementById(
+"fileInput"
+);
+
+const fileName =
+document.getElementById(
+"fileName"
+);
+
+fileInput.addEventListener(
+"change",
+function() {
+
+if(this.files.length > 0) {
+
+fileName.textContent =
+"Selected: " +
+this.files[0].name;
+
+}
+
+else {
+
+fileName.textContent =
+"";
+
+}
+
+}
+);
+
+</script>
+
+</body>
+</html>
