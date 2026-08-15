@@ -1724,12 +1724,13 @@
 
             <div class="download-buttons">
 
-                <a
-                    href="App/KineticKois.jar"
+                <button
+                    onclick="downloadAppFolder()"
                     class="btn btn-primary"
+                    id="downloadBtn"
                 >
                     💻 Download SuperStox
-                </a>
+                </button>
 
             </div>
 
@@ -1761,7 +1762,69 @@
 </footer>
 
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
 <script>
+
+/* =========================================================
+   DOWNLOAD APP FOLDER
+========================================================= */
+
+async function downloadAppFolder() {
+  const downloadBtn = document.getElementById('downloadBtn');
+  downloadBtn.disabled = true;
+  downloadBtn.textContent = '⏳ Downloading...';
+  
+  try {
+    const zip = new JSZip();
+    
+    // List of all files in the App folder
+    const appFiles = [
+      'EXECUTABLE_README.txt',
+      'FeatureExtractor.java',
+      'Fetcher.java',
+      'InvestingSimulator.java',
+      'JDK26.yml',
+      'Main.java',
+      'MANIFEST.MF',
+      'RunApp.bat',
+      'Simulator.java',
+      'SuperStoxUI.java',
+      'KineticKois.jar'
+    ];
+    
+    // Fetch and add each file to the zip
+    for (const file of appFiles) {
+      try {
+        const response = await fetch(`App/${file}`);
+        if (response.ok) {
+          const blob = await response.blob();
+          zip.file(file, blob);
+        }
+      } catch (err) {
+        console.warn(`Could not fetch ${file}:`, err);
+      }
+    }
+    
+    // Generate the ZIP file and trigger download
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(zipBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'SuperStox-App.zip';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+  } catch (error) {
+    console.error('Download error:', error);
+    alert('Error downloading the app. Please try again or download the JAR file directly.');
+  } finally {
+    downloadBtn.disabled = false;
+    downloadBtn.textContent = '💻 Download SuperStox';
+  }
+}
 
 /* =========================================================
    LESSON DATA
