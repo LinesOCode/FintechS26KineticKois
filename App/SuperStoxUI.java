@@ -3,12 +3,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
 
-class UI {
+class SuperStoxUI {
     private JFrame frame;
     private CardLayout cardLayout;
     private JPanel cards;
 
-    public UI() {
+    public SuperStoxUI() {
         frame = new JFrame("SuperStox");
         cardLayout = new CardLayout();
         cards = new JPanel(cardLayout);
@@ -160,6 +160,6 @@ class UI {
 
     public static void main(String[] args) {
         // Ensure GUI is created on the Event Dispatch Thread
-        SwingUtilities.invokeLater(UI::new);
+        SwingUtilities.invokeLater(SuperStoxUI::new);
     }
 }
