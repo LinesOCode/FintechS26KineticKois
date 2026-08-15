@@ -289,7 +289,8 @@
      // Fetch multiple symbols' quotes using Yahoo Finance query endpoint.
      private List<StockInfo> fetchQuotes(String[] symbols) throws Exception {
          String joined = String.join(",", symbols);
-         String url = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=" + URLEncoder.encode(joined, "UTF-8");
+       // V8 Chart endpoint allows batching via comma-separation on some CDNs, or less rigid validation
+String url = "https://query1.finance.yahoo.com/v8/finance/chart/" + URLEncoder.encode(joined, "UTF-8");
          HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
          HttpRequest req = HttpRequest.newBuilder(URI.create(url))
              .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
